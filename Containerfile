@@ -1,14 +1,16 @@
 ### define variables
 
 ARG FEDORA_VERSION="${FEDORA_VERSION:-42}"
-ARG BASE_IMAGE="ghcr.io/fedora-bootc/${FEDORA_VERSION}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
+ARG SOURCE_IMAGE="${SOURCE_IMAGE:-$BASE_IMAGE_NAME-main}"
+ARG BASE_IMAGE="ghcr.io/fedora-bootc/${SOURCE_IMAGE}"
 
 ### copy build scripts to root
 FROM scratch AS ctx
 COPY build_files /
 
 ### define main desktop build
-FROM ${BASE_IMAGE} as kyawthuite
+FROM ${BASE_IMAGE}:${FEDORA_VERSION} AS kyawthuite
 
 ### copy shared settings
 COPY system_files/desktop/shared /
