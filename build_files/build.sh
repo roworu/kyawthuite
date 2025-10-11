@@ -19,6 +19,11 @@ dnf5 install -y konsole
 # Disable COPRs so they don't end up enabled on the final image:
 # dnf5 -y copr disable ublue-os/staging
 
+# Install Hyprland copr repository and packages
+dnf5 -y copr enable solopasha/hyprland
+dnf5 -y install hyprland
+dnf5 -y copr disable solopasha/hyprland
+
 #### Example for enabling a System Unit File
 
 systemctl enable podman.socket
