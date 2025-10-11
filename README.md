@@ -7,18 +7,18 @@
   </picture>
 </div>
 
-# kyawthuite
+## kyawthuite
 kyawthuite - minimal, performant, and stable desktop OS based on Fedora, Bazzite and Universal Blue technologies
 
 kyawthuite (pronounced as "kyatuit") - named after the [Kyawthuite](https://wikipedia.org/wiki/Kyawthuite) mineral, a rare natural bismuth antimonate (BiSbO₄) known for its **stability and distinct crystalline structure**.
 
-## base System
+### base system
 
 - built on Fedora 42
 - uses [Bazzite](https://bazzite.gg/) as the base image
 - Hyprland inegrated
 
-# installation
+## installation
 
 you you already running Fedora atomic or UBlue based distribution:
 ```bash
