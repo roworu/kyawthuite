@@ -3,7 +3,7 @@
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/roworu/kyawthuite/refs/heads/main/repo_files/kyawthuite-logo-dark.png">
-    <img alt="kyawthuite logo" src="https://raw.githubusercontent.com/roworu/kyawthuite/refs/heads/main/repo_files/kyawthuite-logo-light.png" width="100">
+    <img alt="kyawthuite logo" src="https://raw.githubusercontent.com/roworu/kyawthuite/refs/heads/main/repo_files/kyawthuite-logo-light.png" width="200">
   </picture>
 </div>
 
