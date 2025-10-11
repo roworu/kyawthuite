@@ -1,29 +1,26 @@
-# Allow build scripts to be referenced without being copied into the final image
+
+### define variables
+
+ARG FEDORA_VERSION="${FEDORA_VERSION:-42}"
+ARG BASE_IMAGE="ghcr.io/fedora-bootc/${FEDORA_VERSION}"
+
+### copy build scripts to root
 FROM scratch AS ctx
 COPY build_files /
 
-# Base Image
-FROM ghcr.io/ublue-os/bazzite:stable
+### define main desktop build
+FROM BASE_IMAGE as kyawthuite
 
-## Other possible base images include:
-# FROM ghcr.io/ublue-os/bazzite:latest
-# FROM ghcr.io/ublue-os/bluefin-nvidia:stable
-# 
-# ... and so on, here are more base images
-# Universal Blue Images: https://github.com/orgs/ublue-os/packages
-# Fedora base image: quay.io/fedora/fedora-bootc:41
-# CentOS base images: quay.io/centos-bootc/centos-bootc:stream10
+### copy shared settings
+COPY system_files/desktop/shared /
 
-### MODIFICATIONS
-## make modifications desired in your image and install packages by modifying the build.sh script
-## the following RUN directive does all the things required to run "build.sh" as recommended.
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/build.sh
-    
+
 ### LINTING
 ## Verify final image and contents are correct.
 RUN bootc container lint

@@ -10,20 +10,12 @@ set -ouex pipefail
 # https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/39/x86_64/repoview/index.html&protocol=https&redirect=1
 
 # this installs a package from fedora repos
-dnf5 install -y konsole
+dnf5 install -y ptyxis nautilus zsh
 
-# Use a COPR Example:
-#
-# dnf5 -y copr enable ublue-os/staging
-# dnf5 -y install package
-# Disable COPRs so they don't end up enabled on the final image:
-# dnf5 -y copr disable ublue-os/staging
-
-# Install Hyprland copr repository and packages
+# install Hyprland copr repository and Hyprland packages
 dnf5 -y copr enable solopasha/hyprland
 dnf5 -y install hyprland
 dnf5 -y copr disable solopasha/hyprland
 
-#### Example for enabling a System Unit File
-
+# enable services
 systemctl enable podman.socket
