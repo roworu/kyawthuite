@@ -1,4 +1,3 @@
-
 ### define variables
 
 ARG FEDORA_VERSION="${FEDORA_VERSION:-42}"
@@ -16,7 +15,6 @@ FROM ${BASE_IMAGE}:${FEDORA_VERSION} AS kyawthuite
 
 ### copy shared settings
 COPY system_files/desktop/shared /
-
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
