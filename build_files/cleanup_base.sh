@@ -1,3 +1,3 @@
 #!/bin/bash
-#
-# TODO: remove some of preinstalled apps
+
+dnf5 remove -y kitty plasma-desktop plasma-workspace
