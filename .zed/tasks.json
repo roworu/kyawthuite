@@ -1,6 +1,6 @@
 [
   {
-    "label": "Build container image and ISO",
+    "label": "just: Build container image and ISO",
     "shell": "system",
     "allow_concurrent_runs": false,
     "reveal": "always",
@@ -14,7 +14,7 @@
     },
   },
   {
-    "label": "Build container image",
+    "label": "just: Build container image",
     "shell": "system",
     "allow_concurrent_runs": false,
     "reveal": "always",
@@ -28,7 +28,7 @@
     },
   },
   {
-    "label": "Build ISO",
+    "label": "just: Build ISO",
     "shell": "system",
     "allow_concurrent_runs": false,
     "reveal": "always",
