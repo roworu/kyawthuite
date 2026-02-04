@@ -4,7 +4,7 @@ ARG FEDORA_VERSION="${FEDORA_VERSION:-43}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-base}"
 ARG BASE_IMAGE_FLAVOR="${BASE_IMAGE_FLAVOR:-main}"
 ARG SOURCE_IMAGE="${SOURCE_IMAGE:-$BASE_IMAGE_NAME-$BASE_IMAGE_FLAVOR}"
-ARG BASE_IMAGE="ghcr.io/ublue-os/kinoite-main:stable"
+ARG BASE_IMAGE="ghcr.io/ublue-os/kinoite:stable"
 
 ### copy build scripts to root
 FROM scratch AS ctx
