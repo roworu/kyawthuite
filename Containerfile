@@ -14,7 +14,7 @@ COPY build_files /
 FROM $BASE_IMAGE AS kyawthuite
 
 ### copy shared settings
-COPY system_files/desktop/shared /
+COPY system_files/shared /
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
