@@ -37,7 +37,6 @@ jobs:
   build:
     name: Build disk images
     runs-on: [self-hosted, ubuntu-24.04]
-    
     strategy:
       fail-fast: false
       matrix:

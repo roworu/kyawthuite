@@ -29,7 +29,6 @@ jobs:
   build_push:
     name: Build and push image
     runs-on: [self-hosted, ubuntu-24.04]
-    
     permissions:
       contents: read
       packages: write
