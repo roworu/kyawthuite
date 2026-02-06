@@ -6,8 +6,7 @@ set -ouex pipefail
 
 # 1) install cachy kernel
 dnf5 -y copr enable bieszczaders/kernel-cachyos
-dnf5 -y remove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra
-dnf5 -y install kernel-cachyos kernel-cachyos-devel-matched
+dnf5 -y --setopt=tsflags=noscripts install kernel-cachyos kernel-cachyos-devel-matched
 dnf5 -y copr disable bieszczaders/kernel-cachyos
 
 # 2) setup selinux
