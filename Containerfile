@@ -6,11 +6,14 @@ ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-base}"
 ARG BASE_IMAGE_FLAVOR="${BASE_IMAGE_FLAVOR:-main}"
 ARG SOURCE_IMAGE="${SOURCE_IMAGE:-$BASE_IMAGE_NAME-$BASE_IMAGE_FLAVOR}"
 ARG BASE_IMAGE="ghcr.io/ublue-os/kinoite-main:$FEDORA_VERSION"
+ARG KERNEL_REF="${KERNEL_REF:-ghcr.io/bazzite-org/kernel-bazzite:latest-f${FEDORA_VERSION}-${ARCH}}"
 ARG NVIDIA_REF="${NVIDIA_REF:-ghcr.io/bazzite-org/nvidia-drivers:latest-f${FEDORA_VERSION}-${ARCH}}"
 ARG NVIDIA_BASE="${NVIDIA_BASE:-kyawthuite}"
 
 FROM scratch AS ctx
 COPY build_files /
+
+FROM ${KERNEL_REF} AS kernel
 
 FROM ${NVIDIA_REF} AS nvidia
 
@@ -41,17 +44,20 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/2_enable_services.sh
 
-RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=cache,dst=/var/cache \
+RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
+    --mount=type=bind,from=kernel,src=/,dst=/rpms/kernel \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/3_cachy_kernel.sh
+    dnf5 -y copr enable bieszczaders/kernel-cachyos && \
+    /ctx/install-kernel && \
+    dnf5 -y copr disable bieszczaders/kernel-cachyos
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/4_build-initramfs.sh
+    /ctx/build-initramfs
 
 ## verify final image and contents are correct.
 RUN bootc container lint
@@ -76,7 +82,7 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/install-nvidia && \
-    /ctx/4_build-initramfs.sh
+    /ctx/build-initramfs
 
 ## verify final image and contents are correct.
 RUN bootc container lint
