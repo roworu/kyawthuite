@@ -1,29 +1,57 @@
-### define variables
-
+### build-time configuration
 ARG FEDORA_VERSION="${FEDORA_VERSION:-43}"
 ARG ARCH="${ARCH:-x86_64}"
+
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-base}"
 ARG BASE_IMAGE_FLAVOR="${BASE_IMAGE_FLAVOR:-main}"
 ARG SOURCE_IMAGE="${SOURCE_IMAGE:-$BASE_IMAGE_NAME-$BASE_IMAGE_FLAVOR}"
+
 ARG BASE_IMAGE="ghcr.io/ublue-os/kinoite-main:$FEDORA_VERSION"
-ARG KERNEL_REF="${KERNEL_REF:-ghcr.io/bazzite-org/kernel-bazzite:latest-f${FEDORA_VERSION}-${ARCH}}"
 ARG NVIDIA_REF="${NVIDIA_REF:-ghcr.io/bazzite-org/nvidia-drivers:latest-f${FEDORA_VERSION}-${ARCH}}"
 ARG NVIDIA_BASE="${NVIDIA_BASE:-kyawthuite}"
+
+################
+# CONTEXT STAGE
+# holds build scripts and shared files
+################
 
 FROM scratch AS ctx
 COPY build_files /
 
-FROM ${KERNEL_REF} AS kernel
+################
+# KERNEL BUILD
+# fetch CachyOS kernel RPMs from COPR
+################
 
-FROM ${NVIDIA_REF} AS nvidia
+FROM fedora:${FEDORA_VERSION} AS kernel-cachyos
+
+# enable COPR repo
+RUN dnf -y install dnf-plugins-core && \
+    dnf -y copr enable bieszczaders/kernel-cachyos
+
+# install kernel to populate RPM database
+RUN dnf -y install \
+    kernel-cachyos \
+    kernel-cachyos-devel-matched
+
+# export kernel RPM artifacts for consumption by OS build
+RUN mkdir -p /rpms/kernel && \
+    dnf download \
+      --destdir=/rpms/kernel \
+      kernel-cachyos \
+      kernel-cachyos-core \
+      kernel-cachyos-modules \
+      kernel-cachyos-devel-matched
+
+RUN dnf clean all
 
 ################
-# NORMAL BUILD
+# NORMAL OS BUILD
 ################
 
 FROM $BASE_IMAGE AS kyawthuite
+FROM kernel-cachyos AS kernel
 
-### copy shared settings
 COPY system_files/shared /
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
@@ -49,9 +77,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=kernel,src=/,dst=/rpms/kernel \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y copr enable bieszczaders/kernel-cachyos && \
-    /ctx/install-kernel && \
-    dnf5 -y copr disable bieszczaders/kernel-cachyos
+    /ctx/install-kernel
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
@@ -59,30 +85,10 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/build-initramfs
 
-## verify final image and contents are correct.
 RUN bootc container lint
 
 ################
 # NVIDIA BUILD
 ################
 
-FROM ${NVIDIA_BASE} AS kyawthuite-nvidia
-
-ARG IMAGE_NAME="${IMAGE_NAME:-kyawthuite-nvidia}"
-ARG IMAGE_VENDOR="${IMAGE_VENDOR:-roworu}"
-ARG IMAGE_BRANCH="${IMAGE_BRANCH:-stable}"
-ARG VERSION_TAG="${VERSION_TAG}"
-ARG VERSION_PRETTY="${VERSION_PRETTY}"
-
-COPY system_files/nvidia/shared /
-
-RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=bind,from=nvidia,src=/,dst=/rpms/nvidia \
-    --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/install-nvidia && \
-    /ctx/build-initramfs
-
-## verify final image and contents are correct.
-RUN bootc container lint
+# todo
