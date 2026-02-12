@@ -198,7 +198,7 @@ tar --create --verbose --preserve-permissions \
 
 rm -rf /nix/* /nix/.[!.]*
 
-install -Dpm0644 -t /usr/share/plymouth/themes/spinner/ /ctx/assets/logos/watermark.png
+# install -Dpm0644 -t /usr/share/plymouth/themes/spinner/ /ctx/assets/logos/watermark.png
 
 # So it won't reboot on Update
 sed -i 's|^ExecStart=.*|ExecStart=/usr/bin/bootc update --quiet|' /usr/lib/systemd/system/bootc-fetch-apply-updates.service
