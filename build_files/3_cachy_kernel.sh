@@ -13,3 +13,4 @@ dnf -y copr disable bieszczaders/kernel-cachyos-lto
 # 4) Clean caches to keep image small
 dnf clean all
 rm -rf /var/cache/dnf
+
