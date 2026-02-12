@@ -50,3 +50,18 @@ dnf5 -y copr disable bieszczaders/kernel-cachyos-lto
 setsebool -P domain_kernel_load_modules on
 
 restore_kernel_install_hooks
+
+
+KERNEL_VERSION="$(rpm -q kernel-cachyos-lto --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" || exit 1
+
+TMP_INITRAMFS="$(mktemp)"
+DRACUT_NO_XATTR=1 /usr/bin/dracut \
+    --no-hostonly \
+    --kver "${KERNEL_VERSION}" \
+    --reproducible \
+    --add ostree \
+    -f "${TMP_INITRAMFS}" \
+    -v || return 1
+
+install -D -m 0600 "${TMP_INITRAMFS}" "/lib/modules/${KERNEL_VERSION}/initramfs.img"
+rm -f "${TMP_INITRAMFS}"
