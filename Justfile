@@ -1,5 +1,8 @@
 export image_name := env("IMAGE_NAME", "kyawthuite")
+export nvidia_image_name := env("NVIDIA_IMAGE_NAME", image_name + "-nvidia")
 export default_tag := env("DEFAULT_TAG", "latest")
+export image_stage := env("IMAGE_STAGE", "kyawthuite")
+export nvidia_stage := env("NVIDIA_STAGE", "kyawthuite-nvidia")
 export bib_image := env("BIB_IMAGE", "quay.io/centos-bootc/bootc-image-builder:latest")
 
 alias build-vm := build-qcow2
@@ -73,11 +76,12 @@ sudoif command *args:
 # Arguments:
 #   $target_image - The tag you want to apply to the image (default: $image_name).
 #   $tag - The tag for the image (default: $default_tag).
+#   $stage - The container stage to build (default: $image_stage).
 #
 # The script constructs the version string using the tag and the current date.
 # If the git working directory is clean, it also includes the short SHA of the current HEAD.
 #
-# just build $target_image $tag
+# just build $target_image $tag $stage
 #
 # Example usage:
 #   just build aurora lts
@@ -86,7 +90,7 @@ sudoif command *args:
 #
 
 # Build the image using the specified parameters
-build $target_image=image_name $tag=default_tag:
+build $target_image=image_name $tag=default_tag $stage=image_stage:
     #!/usr/bin/env bash
 
     BUILD_ARGS=()
@@ -97,8 +101,13 @@ build $target_image=image_name $tag=default_tag:
     podman build \
         "${BUILD_ARGS[@]}" \
         --pull=newer \
+        --target "${stage}" \
         --tag "${target_image}:${tag}" \
         .
+
+# Build the Nvidia image
+build-nvidia $target_image=nvidia_image_name $tag=default_tag:
+    just build {{ target_image }} {{ tag }} {{ nvidia_stage }}
 
 # Command: _rootful_load_image
 # Description: This script checks if the current user is root or running under sudo. If not, it attempts to resolve the image tag using podman inspect.
@@ -197,29 +206,61 @@ _build-bib $target_image $tag $type $config: (_rootful_load_image target_image t
 # Example: just _rebuild-bib localhost/fedora latest qcow2 disk_config/disk.toml
 _rebuild-bib $target_image $tag $type $config: (build target_image tag) && (_build-bib target_image tag type config)
 
+# Podman builds the Nvidia image from the Containerfile and creates a bootable image
+# Parameters:
+#   target_image: The name of the image to build (ex. localhost/fedora-nvidia)
+#   tag: The tag of the image to build (ex. latest)
+#   type: The type of image to build (ex. qcow2, raw, iso)
+#   config: The configuration file to use for the build (default: disk_config/disk.toml)
+_rebuild-bib-nvidia $target_image $tag $type $config: (build-nvidia target_image tag) && (_build-bib target_image tag type config)
+
 # Build a QCOW2 virtual machine image
 [group('Build Virtal Machine Image')]
 build-qcow2 $target_image=("localhost/" + image_name) $tag=default_tag: && (_build-bib target_image tag "qcow2" "disk_config/disk.toml")
+
+# Build a QCOW2 virtual machine image (Nvidia)
+[group('Build Virtal Machine Image')]
+build-qcow2-nvidia $target_image=("localhost/" + nvidia_image_name) $tag=default_tag: && (_build-bib target_image tag "qcow2" "disk_config/disk.toml")
 
 # Build a RAW virtual machine image
 [group('Build Virtal Machine Image')]
 build-raw $target_image=("localhost/" + image_name) $tag=default_tag: && (_build-bib target_image tag "raw" "disk_config/disk.toml")
 
+# Build a RAW virtual machine image (Nvidia)
+[group('Build Virtal Machine Image')]
+build-raw-nvidia $target_image=("localhost/" + nvidia_image_name) $tag=default_tag: && (_build-bib target_image tag "raw" "disk_config/disk.toml")
+
 # Build an ISO virtual machine image
 [group('Build Virtal Machine Image')]
 build-iso $target_image=("localhost/" + image_name) $tag=default_tag: && (_build-bib target_image tag "iso" "disk_config/iso.toml")
+
+# Build an ISO virtual machine image (Nvidia)
+[group('Build Virtal Machine Image')]
+build-iso-nvidia $target_image=("localhost/" + nvidia_image_name) $tag=default_tag: && (_build-bib target_image tag "iso" "disk_config/iso-nvidia.toml")
 
 # Rebuild a QCOW2 virtual machine image
 [group('Build Virtal Machine Image')]
 rebuild-qcow2 $target_image=("localhost/" + image_name) $tag=default_tag: && (_rebuild-bib target_image tag "qcow2" "disk_config/disk.toml")
 
+# Rebuild a QCOW2 virtual machine image (Nvidia)
+[group('Build Virtal Machine Image')]
+rebuild-qcow2-nvidia $target_image=("localhost/" + nvidia_image_name) $tag=default_tag: && (_rebuild-bib-nvidia target_image tag "qcow2" "disk_config/disk.toml")
+
 # Rebuild a RAW virtual machine image
 [group('Build Virtal Machine Image')]
 rebuild-raw $target_image=("localhost/" + image_name) $tag=default_tag: && (_rebuild-bib target_image tag "raw" "disk_config/disk.toml")
 
+# Rebuild a RAW virtual machine image (Nvidia)
+[group('Build Virtal Machine Image')]
+rebuild-raw-nvidia $target_image=("localhost/" + nvidia_image_name) $tag=default_tag: && (_rebuild-bib-nvidia target_image tag "raw" "disk_config/disk.toml")
+
 # Rebuild an ISO virtual machine image
 [group('Build Virtal Machine Image')]
 rebuild-iso $target_image=("localhost/" + image_name) $tag=default_tag: && (_rebuild-bib target_image tag "iso" "disk_config/iso.toml")
+
+# Rebuild an ISO virtual machine image (Nvidia)
+[group('Build Virtal Machine Image')]
+rebuild-iso-nvidia $target_image=("localhost/" + nvidia_image_name) $tag=default_tag: && (_rebuild-bib-nvidia target_image tag "iso" "disk_config/iso-nvidia.toml")
 
 # Run a virtual machine with the specified image type and configuration
 _run-vm $target_image $tag $type $config:
