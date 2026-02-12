@@ -1,4 +1,3 @@
-### build-time configuration
 ARG FEDORA_VERSION="43"
 ARG BASE_IMAGE="ghcr.io/ublue-os/kinoite-main:$FEDORA_VERSION"
 
