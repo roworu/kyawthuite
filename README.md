@@ -9,10 +9,10 @@
 
 
 # WIP
-this is not intended for real worl usage, project is on its early stages
+this is not intended for real world usage, project is on its early stages
 
 ```
-kyawthuite - minimal, performant, and stable desktop OS based on Fedora, Universal Blue technologies
+kyawthuite - minimal, and stable desktop OS based on Fedora, Universal Blue and CachyOS technologies  
 
 kyawthuite (pronounced as "kyatuit") - named after the [Kyawthuite](https://wikipedia.org/wiki/Kyawthuite) mineral, a rare natural bismuth antimonate (BiSbO₄) known for its **stability and distinct crystalline structure**.
 ```
