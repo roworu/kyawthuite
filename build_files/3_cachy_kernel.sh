@@ -60,6 +60,7 @@ DRACUT_NO_XATTR=1 /usr/bin/dracut \
     --kver "${KERNEL_VERSION}" \
     --reproducible \
     --add ostree \
+    --add-drivers "virtio_blk virtio_pci virtio_scsi sd_mod scsi_mod btrfs" \
     -f "${TMP_INITRAMFS}" \
     -v || return 1
 
