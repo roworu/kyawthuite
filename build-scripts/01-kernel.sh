@@ -9,7 +9,7 @@ shopt -s nullglob
 pushd /usr/lib/kernel/install.d
 printf '%s\n' '#!/bin/sh' 'exit 0' > 05-rpmostree.install
 printf '%s\n' '#!/bin/sh' 'exit 0' > 50-dracut.install
-chmod +x 05-rpmostree.install 50-dracut.install
+chmod +x  05-rpmostree.install 50-dracut.install
 popd
 
 packages=(
@@ -18,15 +18,14 @@ packages=(
 )
 
 for pkg in kernel kernel-core kernel-modules kernel-modules-core; do
-  rpm --erase "$pkg" --nodeps --noscripts
+  rpm --erase $pkg --nodeps
 done
-
 rm -rf "/usr/lib/modules/$(ls /usr/lib/modules | head -n1)"
 rm -rf /boot/*
 
-dnf5 -y install --setopt=tsflags=noscripts "${packages[@]}"
+dnf5 -y install "${packages[@]}"
 dnf5 versionlock add "${packages[@]}"
 
-dnf5 -y distro-sync --setopt=tsflags=noscripts
+dnf5 -y distro-sync
 
 echo "::endgroup::"

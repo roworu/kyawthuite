@@ -4,8 +4,8 @@ on:
   pull_request:
     branches:
       - main
-#  schedule:
-#    - cron: '05 10 * * *'  # 10:05am UTC everyday
+  schedule:
+    - cron: '05 10 * * *'  # 10:05am UTC everyday
   push:
     branches:
       - main
@@ -15,8 +15,6 @@ on:
 
 env:
   IMAGE_DESC: "kyawthuite"
-  IMAGE_KEYWORDS: "bootc,ublue,universal-blue"
-  IMAGE_LOGO_URL: "https://avatars.githubusercontent.com/u/120078124?s=200&v=4"
   IMAGE_NAME: "${{ github.event.repository.name }}"
   IMAGE_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
   FEDORA_VERSION: "43"
@@ -53,16 +51,20 @@ jobs:
             echo "IMAGE_NAME=${IMAGE_NAME}-${{ matrix.flavor }}" >> $GITHUB_ENV
           fi
 
-      - name: Prepare environment
+      - name: Lower case image variables
         run: |
           echo "IMAGE_REGISTRY=${IMAGE_REGISTRY,,}" >> ${GITHUB_ENV}
           echo "IMAGE_NAME=${IMAGE_NAME,,}" >> ${GITHUB_ENV}
 
+      - name: Set tag prefix
+        run: |
+          echo "TAG_PREFIX=${{ github.ref_name == 'edge' && 'edge.' || '' }}" >> $GITHUB_ENV
+
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - name: Maximize build space
-        uses: ublue-os/remove-unwanted-software@695eb75bc387dbcd9685a8e72d23439d8686cba6
+      # - name: Maximize build space
+      #   uses: ublue-os/remove-unwanted-software@695eb75bc387dbcd9685a8e72d23439d8686cba6
 
       - name: Mount BTRFS for podman storage
         id: container-storage-action
@@ -82,13 +84,13 @@ jobs:
         id: metadata
         with:
           tags: |
-            type=raw,value=${{ env.DEFAULT_TAG }}
-            type=raw,value=${{ env.DEFAULT_TAG }}.{{date 'YYYYMMDD'}}
-            type=raw,value={{date 'YYYYMMDD'}}
+            type=raw,value=${{ env.TAG_PREFIX }}{{date 'YYYYMMDD'}}
+            type=raw,value=${{ env.TAG_PREFIX }}${{ env.DEFAULT_TAG }}
+            type=raw,value=${{ env.TAG_PREFIX }}${{ env.FEDORA_VERSION }}
+            type=raw,value=${{ env.TAG_PREFIX }}${{ env.FEDORA_VERSION }}.{{date 'YYYYMMDD'}}
             type=sha,enable=${{ github.event_name == 'pull_request' }}
             type=ref,event=pr
           labels: |
-            io.artifacthub.package.readme-url=https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}/${{ github.sha }}/README.md
             org.opencontainers.image.created=${{ steps.date.outputs.date }}
             org.opencontainers.image.description=${{ env.IMAGE_DESC }}
             org.opencontainers.image.documentation=https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}/${{ github.sha }}/README.md
@@ -96,21 +98,23 @@ jobs:
             org.opencontainers.image.title=${{ env.IMAGE_NAME }}
             org.opencontainers.image.url=https://github.com/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}/tree/${{ github.sha }}
             org.opencontainers.image.vendor=${{ github.repository_owner }}
-            org.opencontainers.image.version=${{ env.DEFAULT_TAG }}.{{date 'YYYYMMDD'}}
-            io.artifacthub.package.deprecated=false
-            io.artifacthub.package.keywords=${{ env.IMAGE_KEYWORDS }}
-            io.artifacthub.package.license=Apache-2.0
-            io.artifacthub.package.logo-url=${{ env.IMAGE_LOGO_URL }}
-            io.artifacthub.package.prerelease=false
+            org.opencontainers.image.version=${{ env.FEDORA_VERSION }}.{{date 'YYYYMMDD'}}
             containers.bootc=1
-          sep-tags: " "
-          sep-annotations: " "
+          sep-tags: ' '
+          sep-annotations: ' '
+
+      - name: Decode Secure Boot keys
+        run: |
+          echo "$SECUREBOOT_KEY" | base64 --decode > system-files/base/secureboot/MOK.key
+          chmod 600 system-files/base/secureboot/MOK.key
+        env:
+          SECUREBOOT_KEY: ${{ secrets.SECUREBOOT_KEY }}
 
       - name: Prepare build args file
         run: |
-          cat <<'EOF_ARGS' >>build_args.txt
+          cat <<'EOF' >>build_args.txt
           FEDORA_VERSION=${{ env.FEDORA_VERSION }}
-          EOF_ARGS
+          EOF
 
       - name: Build Image
         id: build_image
@@ -141,21 +145,22 @@ jobs:
           done
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
-        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9
+        if: github.event_name != 'pull_request'
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push To GHCR
-        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        if: github.event_name != 'pull_request'
         run: |
           set -euo pipefail
 
           retries=5
           delay=10
 
+          # Loop through each tag
           for tag in ${{ steps.metadata.outputs.tags }}; do
             echo "Pushing tag: $tag"
 
@@ -177,7 +182,7 @@ jobs:
           done
 
       - name: Install Cosign
-        uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
+        uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad
         if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         with:
           cosign-release: 'v2.6.1'

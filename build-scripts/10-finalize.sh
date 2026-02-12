@@ -9,25 +9,21 @@ shopt -s nullglob
 RELEASE="$(rpm -E %fedora)"
 DATE=$(date +%Y%m%d)
 
-IMAGE_NAME="Kyawthuite"
-IMAGE_ID="kyawthuite"
-HOME_URL="https://github.com/roworu/kyawthuite"
-SUPPORT_URL="https://github.com/roworu/kyawthuite"
-BUG_REPORT_URL="https://github.com/roworu/kyawthuite/issues"
+echo "kyawthuite" | tee "/etc/hostname"
+sed -i -f - /usr/lib/os-release <<EOF
+s|^NAME=.*|NAME=\"kyawthuite\"|
+s|^ID=.*|ID=\"kyawthuite\"|
+s|^VERSION=.*|VERSION=\"${RELEASE}.${DATE}\"|
+s|^PRETTY_NAME=.*|PRETTY_NAME=\"kyawthuite ${RELEASE}.${DATE}\"|
+s|^LOGO=.*|LOGO=\"cachyos\"|
 
-printf '%s\n' "${IMAGE_ID}" > /etc/hostname
+/^REDHAT_BUGZILLA_PRODUCT=/d
+/^REDHAT_BUGZILLA_PRODUCT_VERSION=/d
+/^REDHAT_SUPPORT_PRODUCT=/d
+/^REDHAT_SUPPORT_PRODUCT_VERSION=/d
+EOF
 
-sed -i -f - /usr/lib/os-release <<EOF_IN
-s|^NAME=.*|NAME="${IMAGE_NAME}"|
-s|^ID=.*|ID="${IMAGE_ID}"|
-s|^VERSION=.*|VERSION="${RELEASE}.${DATE}"|
-s|^PRETTY_NAME=.*|PRETTY_NAME="${IMAGE_NAME} ${RELEASE}.${DATE}"|
-s|^HOME_URL=.*|HOME_URL="${HOME_URL}"|
-s|^BUG_REPORT_URL=.*|BUG_REPORT_URL="${BUG_REPORT_URL}"|
-s|^SUPPORT_URL=.*|SUPPORT_URL="${SUPPORT_URL}"|
-s|^DEFAULT_HOSTNAME=.*|DEFAULT_HOSTNAME="${IMAGE_ID}"|
-EOF_IN
-
+find /etc/yum.repos.d/ -maxdepth 1 -type f -name '*.repo' ! -name 'fedora.repo' ! -name 'fedora-updates.repo' ! -name 'fedora-updates-testing.repo' -exec rm -f {} +
 rm -rf /tmp/* || true
 dnf5 clean all
 
