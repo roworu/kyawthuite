@@ -3,7 +3,7 @@ ARG FEDORA_VERSION=${FEDORA_VERSION}
 FROM scratch AS ctx
 COPY build-scripts /
 COPY patches /patches
-COPY system-files/assets /assets
+# COPY system-files/assets /assets
 
 FROM quay.io/fedora/fedora-bootc:${FEDORA_VERSION} AS base
 # Fix for KeyError: 'vendor' image-builder
