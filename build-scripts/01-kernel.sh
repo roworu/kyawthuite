@@ -18,15 +18,15 @@ packages=(
 )
 
 for pkg in kernel kernel-core kernel-modules kernel-modules-core; do
-  rpm --erase "$pkg" --nodeps
+  rpm --erase "$pkg" --nodeps --noscripts
 done
 
 rm -rf "/usr/lib/modules/$(ls /usr/lib/modules | head -n1)"
 rm -rf /boot/*
 
-dnf5 -y install "${packages[@]}"
+dnf5 -y install --setopt=tsflags=noscripts "${packages[@]}"
 dnf5 versionlock add "${packages[@]}"
 
-dnf5 -y distro-sync
+dnf5 -y distro-sync --setopt=tsflags=noscripts
 
 echo "::endgroup::"
