@@ -9,7 +9,6 @@ shopt -s nullglob
 system_services=(
   podman.socket
   chronyd.service
-  preload.service
   thermald.service
   firewalld.service
   podman-tcp.service
