@@ -2,10 +2,9 @@ ARG FEDORA_VERSION=${FEDORA_VERSION}
 
 FROM scratch AS ctx
 COPY build-scripts /
-COPY patches /patches
-# COPY system-files/assets /assets
 
-FROM quay.io/fedora/fedora-bootc:${FEDORA_VERSION} AS base
+FROM quay.io/fedora/fedora-kinoite:${FEDORA_VERSION} AS base
+
 # Fix for KeyError: 'vendor' image-builder
 RUN mkdir -p /usr/lib/bootupd/updates \
     && cp -r /usr/lib/efi/*/*/* /usr/lib/bootupd/updates
@@ -30,17 +29,7 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/03-de.sh
-
-RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/var \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/04-extra.sh
-
-RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/var \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/05-services.sh
+    /ctx/03-services.sh
 
 RUN bootc container lint
 
@@ -50,12 +39,12 @@ FROM base AS kyawthuite
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/09-initramfs.sh
+    /ctx/04-initramfs.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/10-finalize.sh
+    /ctx/05-finalize.sh
 
 RUN bootc container lint
 
@@ -72,11 +61,11 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/09-initramfs.sh
+    /ctx/04-initramfs.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/10-finalize.sh
+    /ctx/05-finalize.sh
 
 RUN bootc container lint

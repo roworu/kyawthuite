@@ -7,34 +7,17 @@ set -ouex pipefail
 shopt -s nullglob
 
 system_services=(
-  nix.mount
   podman.socket
-  greetd.service
   chronyd.service
-  preload.service
   thermald.service
   firewalld.service
-  nix-setup.service
-  nix-daemon.service
-  podman-tcp.service
-  tailscaled.service
-  systemd-homed.service
   flatpak-theme.service
   systemd-resolved.service
   bootc-fetch-apply-updates.service
 )
 
 user_services=(
-  dms.service
   podman.socket
-  dms-watch.path
-  dsearch.service
-  de-setup.service
-  foot-server.service
-  flathub-setup.service
-  gnome-keyring-daemon.socket
-  gnome-keyring-daemon.service
-  dms-greeter-sync-trigger.service
 )
 
 mask_services=(
