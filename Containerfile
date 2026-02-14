@@ -2,7 +2,6 @@ ARG FEDORA_VERSION=${FEDORA_VERSION}
 
 FROM scratch AS ctx
 COPY build-scripts /
-COPY patches /patches
 
 FROM quay.io/fedora/fedora-kinoite:${FEDORA_VERSION} AS base
 
