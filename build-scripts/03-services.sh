@@ -35,17 +35,4 @@ systemctl enable "${system_services[@]}"
 systemctl mask "${mask_services[@]}"
 systemctl --global enable "${user_services[@]}"
 
-
-for service in "${system_services[@]}"; do
-  echo "enable $service" >> "$preset_file"
-done
-
-mkdir -p "/etc/systemd/user-preset/"
-
-for service in "${user_services[@]}"; do
-  echo "enable $service" >> "$preset_file"
-done
-
-systemctl --global preset-all
-
 echo "::endgroup::"
