@@ -11,7 +11,6 @@ system_services=(
   chronyd.service
   thermald.service
   firewalld.service
-  podman-tcp.service
   flatpak-theme.service
   systemd-resolved.service
   bootc-fetch-apply-updates.service
