@@ -18,7 +18,6 @@ packages=(
 
     # codecs / multimedia
     @multimedia
-    ffmpeg
     libheif-freeworld
     qt-heif-image-plugin
 
@@ -34,6 +33,8 @@ packages=(
 )
 
 dnf5 -y install "${packages[@]}"
+
+dnf5 -y swap ffmpeg-free ffmpeg --allowerasing
 
 packages=(
     # games
@@ -71,6 +72,7 @@ packages=(
     digikam
     showfoto
     uuctl
+    firefox
 )
 
 dnf5 -y remove "${packages[@]}"
