@@ -51,8 +51,6 @@ RUN bootc container lint
 
 FROM base AS kyawthuite-nvidia
 
-COPY system-files/nvidia /
-
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
