@@ -28,7 +28,7 @@ system_services=(
 )
 
 user_services=(
-  dms.service
+#  dms.service
   podman.socket
   dms-watch.path
   dsearch.service
