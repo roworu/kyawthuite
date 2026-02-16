@@ -15,7 +15,7 @@ system_services=(
   thermald.service
   firewalld.service
   nix-setup.service
-  nix-daemon.service
+#  nix-daemon.service
   podman-tcp.service
   tailscaled.service
   systemd-homed.service
