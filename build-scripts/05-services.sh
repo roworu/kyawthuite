@@ -6,6 +6,9 @@ set -ouex pipefail
 
 shopt -s nullglob
 
+preset_file="/usr/lib/systemd/system-preset/01-kyawthuite.preset"
+touch "$preset_file"
+
 system_services=(
   nix.mount
   podman.socket
