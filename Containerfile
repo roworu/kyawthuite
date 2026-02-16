@@ -32,10 +32,10 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
 #    --mount=type=tmpfs,dst=/tmp \
 #    /ctx/03-de.sh
 
-RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/var \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/04-extra.sh
+#RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+#    --mount=type=tmpfs,dst=/var \
+#    --mount=type=tmpfs,dst=/tmp \
+#    /ctx/04-extra.sh
 
 #RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
 #    --mount=type=tmpfs,dst=/var \
