@@ -42,10 +42,10 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/10-image_info.sh
 
-#RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
-#    --mount=type=tmpfs,dst=/var \
-#    --mount=type=tmpfs,dst=/tmp \
-#    /ctx/30-plasma.sh
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/var \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/30-plasma.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
@@ -72,10 +72,10 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/10-image_info.sh
 
-#RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
-#    --mount=type=tmpfs,dst=/var \
-#    --mount=type=tmpfs,dst=/tmp \
-#    /ctx/30-plasma.sh
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/var \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/30-plasma.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
