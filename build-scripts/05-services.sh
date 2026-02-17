@@ -7,18 +7,11 @@ touch "$preset_file"
 
 system_services=(
   podman.socket
-  chronyd.service
-  preload.service
-  podman-tcp.service
-  systemd-homed.service
   systemd-resolved.service
-  bootc-fetch-apply-updates.service
 )
 
 user_services=(
   podman.socket
-  dms-watch.path
-  flathub-setup.service
 )
 
 mask_services=(
