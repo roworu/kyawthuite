@@ -17,7 +17,8 @@ dnf5 -y install "${packages[@]}"
 preset_file="/usr/lib/systemd/system-preset/01-kyawthuite.preset"
 
 system_services=(
-    plasmalogin
+##    plasmalogin
+    sddm
 )
 
 systemctl enable "${system_services[@]}"
