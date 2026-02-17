@@ -1,10 +1,6 @@
-#!/bin/bash
-
-echo "::group:: ===$(basename "$0")==="
+#!/usr/bin/env bash
 
 set -ouex pipefail
-
-shopt -s nullglob
 
 preset_file="/usr/lib/systemd/system-preset/01-kyawthuite.preset"
 touch "$preset_file"
@@ -41,7 +37,6 @@ systemctl enable "${system_services[@]}"
 systemctl mask "${mask_services[@]}"
 systemctl --global enable "${user_services[@]}"
 
-
 for service in "${system_services[@]}"; do
   echo "enable $service" >> "$preset_file"
 done
@@ -53,5 +48,3 @@ for service in "${user_services[@]}"; do
 done
 
 systemctl --global preset-all
-
-echo "::endgroup::"

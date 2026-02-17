@@ -2,10 +2,8 @@
 
 set -ouex pipefail
 
-# mkdir -p /var/roothome
 dnf5 -y install dnf5-plugins
 echo -n "max_parallel_downloads=10" >>/etc/dnf/dnf.conf
-# RELEASE=$(rpm -E %fedora)
 
 # rpmfusion repos
 dnf5 -y install \

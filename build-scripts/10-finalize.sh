@@ -1,10 +1,6 @@
-#!/bin/bash
-
-echo "::group:: ===$(basename "$0")==="
+#!/usr/bin/env bash
 
 set -ouex pipefail
-
-shopt -s nullglob
 
 RELEASE="$(rpm -E %fedora)"
 DATE=$(date +%Y%m%d)
@@ -27,4 +23,3 @@ find /etc/yum.repos.d/ -maxdepth 1 -type f -name '*.repo' ! -name 'fedora.repo' 
 rm -rf /tmp/* || true
 dnf5 clean all
 
-echo "::endgroup::"
