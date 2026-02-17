@@ -16,7 +16,7 @@ system_services=(
   chronyd.service
   preload.service
 #  thermald.service
-  firewalld.service
+#  firewalld.service
   nix-setup.service
 #  nix-daemon.service
   podman-tcp.service
