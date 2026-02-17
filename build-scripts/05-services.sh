@@ -35,8 +35,8 @@ user_services=(
 #  de-setup.service
 #  foot-server.service
   flathub-setup.service
-  gnome-keyring-daemon.socket
-  gnome-keyring-daemon.service
+#  gnome-keyring-daemon.socket
+#  gnome-keyring-daemon.service
 #  dms-greeter-sync-trigger.service
 )
 
