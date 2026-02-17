@@ -2,6 +2,15 @@
 
 set -ouex pipefail
 
+# setup repos
+dnf5 config-manager addrepo \
+  --from-repofile=https://negativo17.org/repos/fedora-nvidia.repo \
+  && sed -i '/^enabled=/a\priority=90' /etc/yum.repos.d/fedora-nvidia.repo
+dnf5 config-manager addrepo \
+  --from-repofile=https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo
+
+dnf5 config-manager setopt "*rpmfusion*".enabled=0
+dnf5 config-manager setopt fedora-nvidia.enabled=0
 
 # akmods and prepare for build
 dnf5 -y install --enablerepo=fedora-nvidia akmod-nvidia
@@ -23,15 +32,11 @@ packages=(
 )
 
 # nvidia driver install 
-dnf5 config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-nvidia.repo \
-  && sed -i '/^enabled=/a\priority=90' /etc/yum.repos.d/fedora-nvidia.repo
-dnf5 config-manager setopt "*rpmfusion*".enabled=0
-dnf5 config-manager setopt fedora-nvidia.enabled=0
 dnf5 -y install --enablerepo=fedora-nvidia "${packages[@]}"
 dnf5 versionlock add "${packages[@]}"
 
 # nvidia container toolkit 
-dnf5 config-manager addrepo --from-repofile=https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo
+
 dnf5 config-manager setopt nvidia-container-toolkit.enabled=0
 dnf5 config-manager setopt nvidia-container-toolkit.gpgcheck=1
 dnf5 -y install --enablerepo=nvidia-container-toolkit \
