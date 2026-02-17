@@ -2,9 +2,6 @@
 
 set -ouex pipefail
 
-preset_file="/usr/lib/systemd/system-preset/01-kyawthuite.preset"
-touch "$preset_file"
-
 system_services=(
   podman.socket
   systemd-resolved.service
@@ -26,16 +23,21 @@ mask_services=(
   akmods-keygen@akmods-keygen.service
 )
 
+# enable/disable system services
 systemctl enable "${system_services[@]}"
 systemctl mask "${mask_services[@]}"
 systemctl --global enable "${user_services[@]}"
 
+preset_file="/usr/lib/systemd/system-preset/01-kyawthuite.preset"
+touch "$preset_file"
 for service in "${system_services[@]}"; do
   echo "enable $service" >> "$preset_file"
 done
 
+# enable user services
 mkdir -p "/etc/systemd/user-preset/"
-
+preset_file="/etc/systemd/user-preset/01-kyawthuite.preset"
+touch "$preset_file"
 for service in "${user_services[@]}"; do
   echo "enable $service" >> "$preset_file"
 done

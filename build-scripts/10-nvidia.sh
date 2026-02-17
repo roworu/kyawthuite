@@ -36,7 +36,6 @@ dnf5 -y install --enablerepo=fedora-nvidia "${packages[@]}"
 dnf5 versionlock add "${packages[@]}"
 
 # nvidia container toolkit 
-
 dnf5 config-manager setopt nvidia-container-toolkit.enabled=0
 dnf5 config-manager setopt nvidia-container-toolkit.gpgcheck=1
 dnf5 -y install --enablerepo=nvidia-container-toolkit \

@@ -22,12 +22,12 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/01-kernel.sh
+    /ctx/10-kernel.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/05-services.sh
+    /ctx/20-services.sh
 
 RUN bootc container lint
 
@@ -40,12 +40,17 @@ FROM base AS kyawthuite
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/09-initramfs.sh
+    /ctx/10-image_info.sh
+
+#RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+#    --mount=type=tmpfs,dst=/var \
+#    --mount=type=tmpfs,dst=/tmp \
+#    /ctx/30-plasma.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/10-finalize.sh
+    /ctx/99-initramfs.sh
 
 RUN bootc container lint
 
@@ -65,11 +70,16 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/09-initramfs.sh
+    /ctx/10-image_info.sh
+
+#RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+#    --mount=type=tmpfs,dst=/var \
+#    --mount=type=tmpfs,dst=/tmp \
+#    /ctx/30-plasma.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/10-finalize.sh
+    /ctx/99-initramfs.sh
 
 RUN bootc container lint
