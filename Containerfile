@@ -65,7 +65,7 @@ COPY system-files/nvidia /
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/00-nvidia.sh
+    /ctx/10-nvidia.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
