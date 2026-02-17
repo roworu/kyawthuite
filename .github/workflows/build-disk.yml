@@ -113,7 +113,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v5
         with:
-          name: ${{ github.event.repository.name }}
+          name: ${{ env.IMAGE_NAME }}
           path: ${{ steps.build-iso.outputs.output-directory }}
           if-no-files-found: error
           retention-days: 0
