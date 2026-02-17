@@ -7,6 +7,7 @@ set -ouex pipefail
 
 packages=(
     plasma-desktop
+    sddm
 )
 
 dnf5 -y install "${packages[@]}"
