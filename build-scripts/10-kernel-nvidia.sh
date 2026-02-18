@@ -12,9 +12,6 @@ printf '%s\n' '#!/bin/sh' 'exit 0' > 50-dracut.install
 chmod +x  05-rpmostree.install 50-dracut.install
 popd
 
-# upgrade image
-dnf5 -y distro-sync
-
 # remove stock kernels and modules
 for pkg in kernel kernel-core kernel-modules kernel-modules-core; do
   rpm --erase $pkg --nodeps
@@ -23,5 +20,8 @@ rm -rf /usr/lib/modules/*
 rm -rf /boot/*
 
 # install and lock cachy kernel
-dnf5 -y install kernel-cachyos-lto-nvidia-open kernel-cachyos-lto-nvidia-devel-matched
-dnf5 versionlock add kernel-cachyos-lto-nvidia-open kernel-cachyos-lto-nvidia-devel-matched
+dnf5 -y install kernel-cachyos-lto kernel-cachyos-lto-devel-matched
+dnf5 versionlock add kernel-cachyos-lto kernel-cachyos-lto-devel-matched
+
+# upgrade image
+dnf5 -y distro-sync
