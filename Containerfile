@@ -48,7 +48,7 @@ RUN bootc container lint
 ### plasma-nvidia desktop image
 ###
 
-FROM ghcr.io/ublue-os/kinoite-main:${FEDORA_VERSION} AS kyawthuite-nvidia
+FROM ghcr.io/ublue-os/kinoite-nvidia:${FEDORA_VERSION} AS kyawthuite-nvidia
 
 # Fix for KeyError: 'vendor' image-builder
 RUN mkdir -p /usr/lib/bootupd/updates \
