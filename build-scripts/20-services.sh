@@ -25,6 +25,7 @@ mask_services=(
 )
 
 # enable/disable system services
+systemctl daemon-reload
 systemctl enable "${system_services[@]}"
 systemctl mask "${mask_services[@]}"
 systemctl --global enable "${user_services[@]}"
