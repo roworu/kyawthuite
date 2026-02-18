@@ -20,3 +20,8 @@ dnf5 -y config-manager setopt "*fedora-multimedia*".exclude="akmod-nvidia kmod-n
 dnf5 -y swap ffmpeg-free ffmpeg --allowerasing -y
 
 dnf5 -y install zsh fastfetch
+
+
+# flatpak setup
+flatpak remote-add --if-not-exists --system flathub /etc/flatpak/remotes.d/flathub.flatpakrepo
+flatpak remote-modify --system --enable flathub
