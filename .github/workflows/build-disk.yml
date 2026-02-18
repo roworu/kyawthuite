@@ -11,7 +11,7 @@ env:
 jobs:
   build_release:
 
-    name: Build and release disk image
+    name: Build and release disk image (${{ matrix.image_name }}${{ matrix.flavor && format(', {0}', matrix.flavor) || '' }})
 
     strategy:
       fail-fast: false

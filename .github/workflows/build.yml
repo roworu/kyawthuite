@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   build_push:
-    name: Build and push image
+    name: Build and push image (${{ matrix.image_name }}${{ matrix.flavor && format(', {0}', matrix.flavor) || '' }})
 
     strategy:
       fail-fast: false
