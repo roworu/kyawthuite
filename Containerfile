@@ -9,12 +9,9 @@ COPY build-scripts /
 
 FROM ghcr.io/ublue-os/kinoite-main:${FEDORA_VERSION} AS kyawthuite
 
-# Fix for KeyError: 'vendor' image-builder
-#RUN mkdir -p /usr/lib/bootupd/updates \
-#   && cp -r /usr/lib/efi/*/*/* /usr/lib/bootupd/updates
-
 COPY system-files/base /
 COPY system-files/plasma /
+COPY --from=ghcr.io/ublue-os/brew:latest /system_files /
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
@@ -54,12 +51,9 @@ RUN bootc container lint
 
 FROM ghcr.io/ublue-os/kinoite-nvidia:${FEDORA_VERSION} AS kyawthuite-nvidia
 
-# Fix for KeyError: 'vendor' image-builder
-#RUN mkdir -p /usr/lib/bootupd/updates \
-#    && cp -r /usr/lib/efi/*/*/* /usr/lib/bootupd/updates
-
 COPY system-files/base /
 COPY system-files/plasma /
+COPY --from=ghcr.io/ublue-os/brew:latest /system_files /
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
@@ -101,6 +95,7 @@ FROM ghcr.io/ublue-os/kinoite-main:latest AS kyawthuite-test
 
 COPY system-files/base /
 COPY system-files/plasma /
+COPY --from=ghcr.io/ublue-os/brew:latest /system_files /
 
 #RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
 #    --mount=type=tmpfs,dst=/var \
