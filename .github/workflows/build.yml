@@ -31,7 +31,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flavor: ["", "nvidia"]
+        include:
+          - image_name: "${{ github.event.repository.name }}"
+            image_desc: "kyawthuite"
+            flavor: ""
+          - image_name: "${{ github.event.repository.name }}"
+            image_desc: "kyawthuite"
+            flavor: "nvidia"
+          - image_name: "kyawthuite-test"
+            image_desc: "kyawthuite-test"
+            flavor: ""
 
     runs-on: ubuntu-24.04
 
@@ -41,6 +50,10 @@ jobs:
       id-token: write
 
     timeout-minutes: 30
+
+    env:
+      IMAGE_NAME: ${{ matrix.image_name }}
+      IMAGE_DESC: ${{ matrix.image_desc }}
 
     steps:
       - name: Change image name depending on build flavor

@@ -83,3 +83,19 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     /ctx/99-initramfs.sh
 
 RUN bootc container lint
+
+###
+### test image
+###
+
+FROM ghcr.io/ublue-os/kinoite-main:${FEDORA_VERSION} AS kyawthuite-test
+
+COPY system-files/base /
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/var \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/00-dnf.sh
+
+RUN bootc container lint
+
