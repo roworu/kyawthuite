@@ -15,15 +15,10 @@ dnf5 -y install --nogpgcheck --repofrompath \
   'terra,https://repos.fyralabs.com/terra$releasever' terra-release{,-extras,-mesa}
 
 # copr
-dnf5 -y copr enable bieszczaders/kernel-cachyos-lto
-dnf5 -y copr enable bieszczaders/kernel-cachyos-addons
 dnf5 -y copr enable ublue-os/packages
 dnf5 -y copr enable che/nerd-fonts
 
-dnf5 -y config-manager setopt "*terra*".priority=4 "*terra*".exclude="nerd-fonts"
-dnf5 -y config-manager setopt "terra-mesa".enabled=true
-dnf5 -y config-manager setopt "*rpmfusion*".priority=5 "*rpmfusion*".exclude="mesa-*"
-dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*"
-
 # packages install
 dnf5 -y swap ffmpeg-free ffmpeg --allowerasing -y
+
+dnf5 -y install zsh
