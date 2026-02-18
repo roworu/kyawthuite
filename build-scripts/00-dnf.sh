@@ -24,3 +24,6 @@ dnf5 -y config-manager setopt "*terra*".priority=4 "*terra*".exclude="nerd-fonts
 dnf5 -y config-manager setopt "terra-mesa".enabled=true
 dnf5 -y config-manager setopt "*rpmfusion*".priority=5 "*rpmfusion*".exclude="mesa-*"
 dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*"
+
+# upgrade image
+dnf5 -y distro-sync

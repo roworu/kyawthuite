@@ -13,10 +13,9 @@ popd
 for pkg in kernel kernel-core kernel-modules kernel-modules-core; do
   rpm --erase $pkg --nodeps
 done
-rm -rf "/usr/lib/modules/$(ls /usr/lib/modules | head -n1)"
+rm -rf /usr/lib/modules/*
 rm -rf /boot/*
 
 # install and lock cachy kernel
 dnf5 -y install kernel-cachyos-lto kernel-cachyos-lto-devel-matched
 dnf5 versionlock add kernel-cachyos-lto kernel-cachyos-lto-devel-matched
-dnf5 -y distro-sync
