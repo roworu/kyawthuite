@@ -11,18 +11,12 @@ env:
 jobs:
   build_release:
 
-    name: Build and release disk image (${{ matrix.image_name }}${{ matrix.flavor && format(', {0}', matrix.flavor) || '' }})
+    name: Build and release disk image
 
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - image_name: "${{ github.event.repository.name }}"
-            flavor: ""
-          - image_name: "${{ github.event.repository.name }}"
-            flavor: "nvidia"
-          - image_name: "kyawthuite-test"
-            flavor: ""
+        flavor: ["", "nvidia", "test"]
 
     runs-on: ubuntu-24.04
 
@@ -32,9 +26,6 @@ jobs:
       id-token: write
 
     timeout-minutes: 60
-
-    env:
-      IMAGE_NAME: ${{ matrix.image_name }}
 
     steps:
       - name: Change image name depending on build flavor
