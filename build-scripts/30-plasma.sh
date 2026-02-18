@@ -4,3 +4,6 @@ set -ouex pipefail
 
 
 # todo: plasma specific settings
+
+# remove update tray icon
+rm /etc/xdg/autostart/org.kde.discover.notifier.desktop || true

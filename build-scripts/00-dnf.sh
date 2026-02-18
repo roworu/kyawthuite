@@ -19,4 +19,4 @@ dnf5 -y config-manager setopt "*fedora-multimedia*".exclude="akmod-nvidia kmod-n
 # packages install
 dnf5 -y swap ffmpeg-free ffmpeg --allowerasing -y
 
-dnf5 -y install zsh
+dnf5 -y install zsh fastfetch

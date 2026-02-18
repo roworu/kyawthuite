@@ -1,21 +1,25 @@
-ARG FEDORA_VERSION=${FEDORA_VERSION}
+ARG FEDORA_VERSION=43
 
 FROM scratch AS ctx
 COPY build-scripts /
 
-# FROM quay.io/fedora/fedora-bootc:${FEDORA_VERSION} AS base
+###
+### base plasma image
+###
 
 FROM ghcr.io/ublue-os/kinoite-main:${FEDORA_VERSION} AS kyawthuite
 
 # Fix for KeyError: 'vendor' image-builder
-RUN mkdir -p /usr/lib/bootupd/updates \
-    && cp -r /usr/lib/efi/*/*/* /usr/lib/bootupd/updates
+#RUN mkdir -p /usr/lib/bootupd/updates \
+#   && cp -r /usr/lib/efi/*/*/* /usr/lib/bootupd/updates
 
 COPY system-files/base /
+COPY system-files/plasma /
 
-###
-### base plasma image
-###
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/var \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/00-image_info.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
@@ -35,7 +39,7 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/10-image_info.sh
+    /ctx/90-cleanup.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
@@ -51,11 +55,16 @@ RUN bootc container lint
 FROM ghcr.io/ublue-os/kinoite-nvidia:${FEDORA_VERSION} AS kyawthuite-nvidia
 
 # Fix for KeyError: 'vendor' image-builder
-RUN mkdir -p /usr/lib/bootupd/updates \
-    && cp -r /usr/lib/efi/*/*/* /usr/lib/bootupd/updates
+#RUN mkdir -p /usr/lib/bootupd/updates \
+#    && cp -r /usr/lib/efi/*/*/* /usr/lib/bootupd/updates
 
 COPY system-files/base /
-COPY system-files/nvidia /
+COPY system-files/plasma /
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/var \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/00-image_info.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
@@ -65,7 +74,7 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/10-kernel-nvidia.sh
+    /ctx/10-kernel.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
@@ -75,7 +84,7 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/10-image_info.sh
+    /ctx/90-cleanup.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
@@ -90,7 +99,8 @@ RUN bootc container lint
 
 FROM ghcr.io/ublue-os/kinoite-main:latest AS kyawthuite-test
 
-# COPY system-files/base /
+COPY system-files/base /
+COPY system-files/plasma /
 
 #RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
 #    --mount=type=tmpfs,dst=/var \

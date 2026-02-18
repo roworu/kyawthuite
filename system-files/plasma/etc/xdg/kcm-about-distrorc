@@ -1,0 +1,5 @@
+[General]
+LogoPath=/usr/share/pixmaps/kyawthuite-logo.png
+Name=kyawthuite
+Website=https://github.com/roworu/kyawthuite
+Variant=Plasma
