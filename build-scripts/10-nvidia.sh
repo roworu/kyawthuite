@@ -13,12 +13,12 @@ dnf5 config-manager setopt "*rpmfusion*".enabled=0
 dnf5 config-manager setopt fedora-nvidia.enabled=0
 
 # akmods and prepare for build
-dnf5 -y install --enablerepo=fedora-nvidia akmod-nvidia
-mkdir -p /var/tmp
-chmod 1777 /var/tmp
-KVER=$(ls /usr/lib/modules | head -n1)
-akmods --force --kernels "${KVER}" --kmod "nvidia"
-cat /var/cache/akmods/nvidia/*.failed.log || true
+#nf5 -y install --enablerepo=fedora-nvidia akmod-nvidia
+#mkdir -p /var/tmp
+#hmod 1777 /var/tmp
+#VER=$(ls /usr/lib/modules | head -n1)
+#akmods --force --kernels "${KVER}" --kmod "nvidia"
+#cat /var/cache/akmods/nvidia/*.failed.log || true
 
 # nvidia driver repo
 packages=(
