@@ -3,11 +3,16 @@
 set -ouex pipefail
 
 
-### install packages 
+### install packages
 
 packages=(
     plasma-desktop
+    plasma-workspace
+    plasma-workspace-x11
     sddm
+    sddm-breeze
+    sddm-wayland-plasma
+    xorg-x11-server-Xorg
 )
 
 dnf5 -y install "${packages[@]}"
@@ -23,6 +28,7 @@ system_services=(
 )
 
 systemctl enable "${system_services[@]}"
+systemctl set-default graphical.target
 
 for service in "${system_services[@]}"; do
   echo "enable $service" >> "$preset_file"
