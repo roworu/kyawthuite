@@ -5,7 +5,7 @@ COPY build-scripts /
 
 # FROM quay.io/fedora/fedora-bootc:${FEDORA_VERSION} AS base
 
-FROM ghcr.io/ublue-os/kinoite-main AS base
+FROM ghcr.io/ublue-os/kinoite-main:${FEDORA_VERSION} AS base
 
 # Fix for KeyError: 'vendor' image-builder
 RUN mkdir -p /usr/lib/bootupd/updates \
