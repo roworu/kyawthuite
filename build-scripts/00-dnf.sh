@@ -25,5 +25,5 @@ dnf5 -y config-manager setopt "terra-mesa".enabled=true
 dnf5 -y config-manager setopt "*rpmfusion*".priority=5 "*rpmfusion*".exclude="mesa-*"
 dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*"
 
-# upgrade image
-dnf5 -y distro-sync
+# packages install
+dnf5 -y swap ffmpeg-free ffmpeg --allowerasing -y
