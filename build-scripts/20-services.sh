@@ -5,7 +5,6 @@ set -ouex pipefail
 system_services=(
   podman.socket
   systemd-resolved.service
-  /dev/zram0
 )
 
 user_services=(
@@ -25,7 +24,6 @@ mask_services=(
 )
 
 # enable/disable system services
-systemctl daemon-reload
 systemctl enable "${system_services[@]}"
 systemctl mask "${mask_services[@]}"
 systemctl --global enable "${user_services[@]}"
