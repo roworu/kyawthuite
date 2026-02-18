@@ -20,8 +20,8 @@ rm -rf /usr/lib/modules/*
 rm -rf /boot/*
 
 # install and lock cachy kernel
-dnf5 -y install kernel-cachyos-lto kernel-cachyos-lto-devel-matched
-dnf5 versionlock add kernel-cachyos-lto kernel-cachyos-lto-devel-matched
+dnf5 -y install kernel-cachyos-lto kernel-cachyos-lto-devel-matched akmods
+dnf5 versionlock add kernel-cachyos-lto kernel-cachyos-lto-devel-matched akmods
 
 # upgrade image
 dnf5 -y distro-sync
