@@ -1,0 +1,6 @@
+[submodule "appindicatorsupport@rgcjonas.gmail.com"]
+	path = system_files/gnome/usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com
+	url = https://github.com/ubuntu/gnome-shell-extension-appindicator.git
+[submodule "system_files/gnome/usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com"]
+	path = system_files/gnome/usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com
+	url = https://github.com/ubuntu/gnome-shell-extension-appindicator.git
