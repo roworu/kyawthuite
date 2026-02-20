@@ -6,3 +6,6 @@ find /etc/yum.repos.d/ -maxdepth 1 -type f -name '*.repo' ! -name 'fedora.repo' 
 rm -rf /tmp/* || true
 dnf5 clean all
 
+# Remove desktopfiles
+rm -vf /usr/share/applications/htop.desktop
+rm -vf /usr/share/applications/nvtop.desktop

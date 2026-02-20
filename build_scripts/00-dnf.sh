@@ -23,7 +23,7 @@ dnf5 -y swap ffmpeg-free ffmpeg --allowerasing -y
 dnf5 -y install zsh fastfetch zram-generator
 
 # virtualization tools (virt manager, etc.)
-dnf5 -y @virtualization
+dnf5 -y install @virtualization
 
 gpasswd -a wheel libvirt
 
