@@ -24,8 +24,7 @@ dnf5 -y install zsh fastfetch zram-generator
 
 # virtualization tools (virt manager, etc.)
 dnf5 -y install @virtualization
-
-gpasswd -a wheel libvirt
+# gpasswd -a wheel libvirt
 
 # flatpak setup
 flatpak remote-add --if-not-exists --system flathub /etc/flatpak/remotes.d/flathub.flatpakrepo
