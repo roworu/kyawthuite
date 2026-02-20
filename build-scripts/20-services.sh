@@ -21,6 +21,7 @@ mask_services=(
   flatpak-add-fedora-repos.service
   NetworkManager-wait-online.service
   akmods-keygen@akmods-keygen.service
+  bootc-fetch-apply-updates.service # disable automatic updates download
 )
 
 # enable/disable system services
