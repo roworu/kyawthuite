@@ -4,3 +4,4 @@ set -ouex pipefail
 
 
 # todo: gnomie specific settings
+echo foo
