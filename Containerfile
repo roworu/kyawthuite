@@ -1,7 +1,7 @@
 ARG FEDORA_VERSION=43
 
 FROM scratch AS ctx
-COPY build-scripts /
+COPY build_scripts /
 
 ###
 ### base plasma image
@@ -9,8 +9,8 @@ COPY build-scripts /
 
 FROM ghcr.io/ublue-os/kinoite-main:${FEDORA_VERSION} AS kyawthuite
 
-COPY system-files/base /
-COPY system-files/plasma /
+COPY system_files/base /
+COPY system_files/plasma /
 COPY --from=ghcr.io/ublue-os/brew:latest /system_files /
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
@@ -56,8 +56,8 @@ RUN bootc container lint
 
 FROM ghcr.io/ublue-os/kinoite-nvidia:${FEDORA_VERSION} AS kyawthuite-nvidia
 
-COPY system-files/base /
-COPY system-files/plasma /
+COPY system_files/base /
+COPY system_files/plasma /
 COPY --from=ghcr.io/ublue-os/brew:latest /system_files /
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
@@ -104,8 +104,8 @@ RUN bootc container lint
 
 FROM ghcr.io/ublue-os/silverblue-main:${FEDORA_VERSION} AS kyawthuite-gnome
 
-COPY system-files/base /
-COPY system-files/gnome /
+COPY system_files/base /
+COPY system_files/gnome /
 COPY --from=ghcr.io/ublue-os/brew:latest /system_files /
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
@@ -152,8 +152,8 @@ RUN bootc container lint
 
 FROM ghcr.io/ublue-os/silverblue-nvidia:${FEDORA_VERSION} AS kyawthuite-gnome-nvidia
 
-COPY system-files/base /
-COPY system-files/gnome /
+COPY system_files/base /
+COPY system_files/gnome /
 COPY --from=ghcr.io/ublue-os/brew:latest /system_files /
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
@@ -200,8 +200,8 @@ RUN bootc container lint
 
 FROM ghcr.io/ublue-os/kinoite-main:latest AS kyawthuite-test
 
-COPY system-files/base /
-COPY system-files/plasma /
+COPY system_files/base /
+COPY system_files/plasma /
 COPY --from=ghcr.io/ublue-os/brew:latest /system_files /
 
 RUN bootc container lint
