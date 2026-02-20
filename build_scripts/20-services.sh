@@ -5,6 +5,7 @@ set -ouex pipefail
 system_services=(
   podman.socket
   systemd-resolved.service
+  libvirtd.service
 )
 
 user_services=(

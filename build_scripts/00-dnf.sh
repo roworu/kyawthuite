@@ -19,8 +19,13 @@ dnf5 -y config-manager setopt "*fedora-multimedia*".exclude="akmod-nvidia kmod-n
 # packages install
 dnf5 -y swap ffmpeg-free ffmpeg --allowerasing -y
 
+# cli tools
 dnf5 -y install zsh fastfetch zram-generator
 
+# virtualization tools (virt manager, etc.)
+dnf5 -y @virtualization
+
+gpasswd -a wheel libvirt
 
 # flatpak setup
 flatpak remote-add --if-not-exists --system flathub /etc/flatpak/remotes.d/flathub.flatpakrepo
