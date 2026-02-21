@@ -16,7 +16,7 @@ dnf5 -y swap ffmpeg-free ffmpeg --allowerasing -y
 # cli tools
 dnf5 -y install zsh fastfetch zram-generator
 
-# virtualization tools (virt manager, etc.)
+# virtualization tools (virt manager, virt viewer, etc.)
 dnf5 -y install @virtualization
 
 # flatpak setup

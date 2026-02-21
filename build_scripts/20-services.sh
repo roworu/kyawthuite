@@ -19,8 +19,8 @@ mask_services=(
   # speed up boot time
   NetworkManager-wait-online.service
   # to not mess with custom kernel installation
-  akmods-keygen@akmods-keygen.service
   akmods-keygen.target
+  akmods-keygen@akmods-keygen.service
   # disable automatic updates download
   bootc-fetch-apply-updates.service
 )
