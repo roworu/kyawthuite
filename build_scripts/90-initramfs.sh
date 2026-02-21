@@ -56,7 +56,6 @@ export DRACUT_NO_XATTR=1
   --kver "$KVER" \
   --reproducible \
   --zstd -v \
-  --add ostree --add fido2 \
   -f "/usr/lib/modules/$KVER/initramfs.img"
 
 chmod 0600 "/usr/lib/modules/$KVER/initramfs.img"
