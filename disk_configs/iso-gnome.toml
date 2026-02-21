@@ -2,7 +2,6 @@
 contents = """
 %post
 bootc switch --mutate-in-place --transport registry ghcr.io/roworu/kyawthuite-gnome:latest
-mokutil --import /secureboot/MOK.der --password password
 %end
 """
 
