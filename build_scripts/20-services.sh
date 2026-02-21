@@ -13,16 +13,18 @@ user_services=(
 )
 
 mask_services=(
-  # logrotate.timer
-  # logrotate.service
-  akmods-keygen.target
-  rpm-ostree-countme.timer
-  rpm-ostree-countme.service
-  # systemd-remount-fs.service
+  # we add these repos manually
   flatpak-add-fedora-repos.service
+
+  # speed up boot time
   NetworkManager-wait-online.service
+
+  # to not mess with custom kernel installation
   akmods-keygen@akmods-keygen.service
-  bootc-fetch-apply-updates.service # disable automatic updates download
+  akmods-keygen.target
+
+  # disable automatic updates download
+  bootc-fetch-apply-updates.service
 )
 
 # enable/disable system services
