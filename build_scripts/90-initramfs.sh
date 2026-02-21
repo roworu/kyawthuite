@@ -4,8 +4,6 @@ echo "::group:: ===$(basename "$0")==="
 
 set -ouex pipefail
 
-shopt -s nullglob
-
 KVER=$(ls /usr/lib/modules | head -n1)
 KIMAGE="/usr/lib/modules/$KVER/vmlinuz"
 SIGN_DIR="/secureboot"
@@ -59,5 +57,3 @@ export DRACUT_NO_XATTR=1
   -f "/usr/lib/modules/$KVER/initramfs.img"
 
 chmod 0600 "/usr/lib/modules/$KVER/initramfs.img"
-
-echo "::endgroup::"
