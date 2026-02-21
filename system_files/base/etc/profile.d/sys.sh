@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
-
-COLOR_BLUE_BOLD='\033[1;34m'
-COLOR_RED_BOLD='\033[1;31m'
-COLOR_RESET='\033[0m'
-
 log() {
     local level="info"
     if [[ "${1:-}" == "error" ]]; then
@@ -14,9 +8,9 @@ log() {
     fi
 
     if [[ "$level" == "error" ]]; then
-        printf "%b\n" "${COLOR_RED_BOLD}$*${COLOR_RESET}"
+        printf "%b\n" "${\033[1;31m}$*${\033[0m}"
     else
-        printf "%b\n" "${COLOR_BLUE_BOLD}$*${COLOR_RESET}"
+        printf "%b\n" "${\033[1;34m}$*${\033[0m}"
     fi
 }
 
