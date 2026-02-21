@@ -4,7 +4,7 @@ echo "::group:: ===$(basename "$0")==="
 
 set -ouex pipefail
 
-KVER=$(ls /usr/lib/modules | head -n1)
+## kernel sign
 KIMAGE="/usr/lib/modules/$KVER/vmlinuz"
 SIGN_DIR="/secureboot"
 
@@ -47,6 +47,7 @@ if [ ! -d "/usr/lib/modules/$KVER" ]; then
   exit 1
 fi
 
+## initramfs build
 depmod -a "$KVER"
 export DRACUT_NO_XATTR=1
 /usr/bin/dracut \
@@ -54,6 +55,7 @@ export DRACUT_NO_XATTR=1
   --kver "$KVER" \
   --reproducible \
   --zstd -v \
+  --add ostree \
   -f "/usr/lib/modules/$KVER/initramfs.img"
 
 chmod 0600 "/usr/lib/modules/$KVER/initramfs.img"
