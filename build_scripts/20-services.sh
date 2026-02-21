@@ -13,12 +13,12 @@ user_services=(
 )
 
 mask_services=(
-  logrotate.timer
-  logrotate.service
+  # logrotate.timer
+  # logrotate.service
   akmods-keygen.target
   rpm-ostree-countme.timer
   rpm-ostree-countme.service
-  systemd-remount-fs.service
+  # systemd-remount-fs.service
   flatpak-add-fedora-repos.service
   NetworkManager-wait-online.service
   akmods-keygen@akmods-keygen.service
