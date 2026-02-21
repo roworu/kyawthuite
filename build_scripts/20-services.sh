@@ -15,14 +15,12 @@ user_services=(
 mask_services=(
   # we add these repos manually
   flatpak-add-fedora-repos.service
-
+  systemd-remount-fs.service
   # speed up boot time
   NetworkManager-wait-online.service
-
   # to not mess with custom kernel installation
   akmods-keygen@akmods-keygen.service
   akmods-keygen.target
-
   # disable automatic updates download
   bootc-fetch-apply-updates.service
 )
