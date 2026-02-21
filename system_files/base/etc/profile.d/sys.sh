@@ -8,9 +8,9 @@ _log() {
     fi
 
     if [[ "$level" == "error" ]]; then
-        printf "%b\n" "${\033[1;31m}$*${\033[0m}"
+        printf "%b\n" "$'\033[1;31m'$*"$'\033[0m'"
     else
-        printf "%b\n" "${\033[1;34m}$*${\033[0m}"
+        printf "%b\n" "$'\033[1;34m'$*"$'\033[0m'"
     fi
 }
 
@@ -85,9 +85,18 @@ sys-upgrade() {
 }
 
 sys-upgrade-reboot() {
-    upgrade
+    sys-upgrade
     _log "==> Rebooting..."
     sudo reboot
+}
+
+sys-cleanup() {
+    _log "==> Cleaning flatpak unused runtimes..."
+    flatpak uninstall --unused -y
+
+    _log "==> Cleaning brew files..."
+    brew cleanup
+
 }
 
 # to use it, call these functions directly from shell, like that:
