@@ -109,11 +109,20 @@ jobs:
         env:
           SECUREBOOT_KEY: ${{ secrets.SECUREBOOT_KEY }}
 
-      - name: Prepare build args file
-        run: |
-          cat <<'EOF' >>build_args.txt
-          FEDORA_VERSION=${{ env.FEDORA_VERSION }}
-          EOF
+#      - name: Prepare build args file
+#        run: |
+#          cat <<'EOF' >>build_args.txt
+#          FEDORA_VERSION=${{ env.FEDORA_VERSION }}
+#          EOF
+
+#      - name: Build Image
+#        id: build_image
+#        run: |
+#          sudo -E buildah build \
+#            --target ${{ env.IMAGE_NAME }} \
+#            --file Containerfile \
+#            --build-arg-file build_args.txt \
+#            --tag raw-img .
 
       - name: Build Image
         id: build_image
@@ -121,7 +130,6 @@ jobs:
           sudo -E buildah build \
             --target ${{ env.IMAGE_NAME }} \
             --file Containerfile \
-            --build-arg-file build_args.txt \
             --tag raw-img .
 
       - name: Run Rechunker
