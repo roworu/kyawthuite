@@ -2,19 +2,14 @@
 
 set -ouex pipefail
 
-dnf5 repolist --enabled
-
 ## copr
 # to not update overwrite cachy kernel with default one during updates:
 dnf5 -y config-manager setopt "*fedora*".exclude="kernel-core-* kernel-modules-* kernel-uki-virt-*"
 dnf5 -y config-manager setopt "*updates*".exclude="kernel-core-* kernel-modules-* kernel-uki-virt-*"
 dnf5 -y config-manager setopt "*fedora-multimedia*".exclude="akmod-nvidia kmod-nvidia"
 
-# packages install
-dnf5 -y swap ffmpeg-free ffmpeg --allowerasing -y
-
 # cli tools
-dnf5 -y install zsh fastfetch zram-generator
+dnf5 -y install zsh fastfetch
 
 # virtualization tools (virt manager, virt viewer, etc.)
 dnf5 -y install @virtualization
