@@ -29,9 +29,9 @@ find "/lib/modules/$KVER" -type f -name '*.ko.xz' -print0 | while IFS= read -r -
     continue
   fi
 
-/usr/src/kernels/"$KVER"/scripts/sign-file \
-    sha512 "$SIGN_DIR/MOK.key" "$SIGN_DIR/MOK.pem" "$uncompressed" || true
-rm -f "$comp"
+  /usr/src/kernels/"$KVER"/scripts/sign-file \
+      sha512 "$SIGN_DIR/MOK.key" "$SIGN_DIR/MOK.pem" "$uncompressed" || true
+  rm -f "$comp"
 
   if xz -z "$uncompressed"; then
     echo "Recompressed and signed $uncompressed - ${uncompressed}.xz"
