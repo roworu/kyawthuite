@@ -5,6 +5,7 @@ echo "::group:: ===$(basename "$0")==="
 set -ouex pipefail
 
 ## kernel sign
+KVER=$(ls /usr/lib/modules | head -n1)
 KIMAGE="/usr/lib/modules/$KVER/vmlinuz"
 SIGN_DIR="/secureboot"
 
