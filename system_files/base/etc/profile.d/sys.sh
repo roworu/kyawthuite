@@ -1,17 +1,20 @@
 #!/usr/bin/bash
 
 _log() {
-    local level="info"
-    if [[ "${1:-}" == "error" ]]; then
+    level="info"
+
+    if [ "${1:-}" = "error" ]; then
         level="error"
         shift
     fi
 
-    if [[ "$level" == "error" ]]; then
-        printf "%b\n" "$'\033[1;31m'$*"$'\033[0m'"
+    if [ "$level" = "error" ]; then
+        color='\033[1;31m'   # red
     else
-        printf "%b\n" "$'\033[1;34m'$*"$'\033[0m'"
+        color='\033[1;34m'   # blue
     fi
+
+    printf "%b%s%b\n" "$color" "$*" '\033[0m'
 }
 
 sys-update() {
@@ -79,7 +82,7 @@ sys-upgrade() {
     flatpak update -y
 
     _log "==> Upgrading brew..."
-    brew upgrade --refresh
+    brew upgrade --force
 
     _log "==> Upgrade complete!"
 }
