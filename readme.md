@@ -2,8 +2,8 @@
 
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/roworu/kyawthuite/refs/heads/main/repo_files/kyawthuite-logo-light.png">
-    <img alt="kyawthuite logo" src="https://raw.githubusercontent.com/roworu/kyawthuite/refs/heads/main/repo_files/kyawthuite-logo-dark.png" width="200">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/roworu/kyawthuite/refs/heads/main/logo.png">
+    <img alt="kyawthuite logo" src="https://raw.githubusercontent.com/roworu/kyawthuite/refs/heads/main/main/logo-dark.png" width="200">
   </picture>
 </div>
 
