@@ -6,7 +6,7 @@ set -ouex pipefail
 # to not update overwrite cachy kernel with default one during updates:
 dnf5 -y config-manager setopt "*fedora*".exclude="kernel-core-* kernel-modules-* kernel-uki-virt-*"
 dnf5 -y config-manager setopt "*updates*".exclude="kernel-core-* kernel-modules-* kernel-uki-virt-*"
-dnf5 -y config-manager setopt "*fedora-multimedia*".exclude="akmod-nvidia kmod-nvidia"
+# dnf5 -y config-manager setopt "*fedora-multimedia*".exclude="akmod-nvidia kmod-nvidia"
 
 # cli tools
 dnf5 -y install zsh fastfetch
