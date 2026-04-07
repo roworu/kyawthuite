@@ -8,6 +8,8 @@ COPY build_scripts /
 ###
 
 FROM ghcr.io/ublue-os/kinoite-main:${FEDORA_VERSION} AS kyawthuite
+ARG FEDORA_VERSION
+ENV FEDORA_VERSION=${FEDORA_VERSION}
 
 COPY system_files/base /
 COPY system_files/plasma /
@@ -62,6 +64,8 @@ RUN bootc container lint
 # FROM ghcr.io/ublue-os/kinoite-nvidia:${FEDORA_VERSION} AS kyawthuite-nvidia
 # FROM ghcr.io/ublue-os/kinoite-main:${FEDORA_VERSION} AS kyawthuite-nvidia
 FROM quay.io/fedora/fedora-kinoite:${FEDORA_VERSION} AS kyawthuite-nvidia
+ARG FEDORA_VERSION
+ENV FEDORA_VERSION=${FEDORA_VERSION}
 
 
 COPY system_files/base /
@@ -122,6 +126,8 @@ RUN bootc container lint
 ###
 
 FROM ghcr.io/ublue-os/silverblue-main:${FEDORA_VERSION} AS kyawthuite-gnome
+ARG FEDORA_VERSION
+ENV FEDORA_VERSION=${FEDORA_VERSION}
 
 COPY system_files/base /
 COPY system_files/gnome /
@@ -175,6 +181,8 @@ RUN bootc container lint
 ###
 
 FROM ghcr.io/ublue-os/silverblue-nvidia:${FEDORA_VERSION} AS kyawthuite-gnome-nvidia
+ARG FEDORA_VERSION
+ENV FEDORA_VERSION=${FEDORA_VERSION}
 
 COPY system_files/base /
 COPY system_files/gnome /
@@ -240,4 +248,3 @@ RUN --mount=type=cache,dst=/var/cache \
     /usr/bin/systemctl preset brew-update.timer
 
 RUN bootc container lint
-
