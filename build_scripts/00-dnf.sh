@@ -19,8 +19,8 @@ dnf5 -y config-manager setopt "*updates*".exclude="kernel-core-* kernel-modules-
 # dnf5 -y install zsh fastfetch
 
 # virtualization tools (virt manager, virt viewer, etc.)
-# dnf5 -y install @virtualization
+dnf5 -y install @virtualization
 
 # flatpak setup
-# flatpak remote-add --if-not-exists --system flathub /etc/flatpak/remotes.d/flathub.flatpakrepo
-# flatpak remote-modify --system --enable flathub
+flatpak remote-add --if-not-exists --system flathub /etc/flatpak/remotes.d/flathub.flatpakrepo
+flatpak remote-modify --system --enable flathub
