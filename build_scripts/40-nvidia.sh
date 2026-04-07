@@ -45,3 +45,4 @@ rm -f nvidia-container.pp
 rm /etc/xdg/autostart/nvidia-settings-load.desktop
 
 systemctl enable nvctk-cdi.service
+echo "test"
