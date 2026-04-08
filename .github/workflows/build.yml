@@ -44,7 +44,6 @@ jobs:
 
     steps:
 
-
       - name: Check if /mnt is there
         id: check_mnt
         run: |
