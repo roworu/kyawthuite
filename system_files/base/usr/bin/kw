@@ -12,7 +12,9 @@ BLUE_COLOR = "\033[1;34m"
 RED_COLOR = "\033[1;31m"
 RESET = "\033[0m"
 
-# logging
+##
+## logging
+##
 class Log:
     def __init__(self) -> None:
         pass
@@ -25,7 +27,9 @@ class Log:
 _log = Log()
         
         
-# helpers
+##       
+## helpers
+##
 def _confirm(prompt: str) -> None:
     """Print prompt and exit unless user answers y/Y."""
     answer = input(f"{BLUE_COLOR}[{PROGRAM_NAME}] {prompt}{RESET} ")
@@ -64,7 +68,9 @@ def bytes_to_mb(n: int) -> str:
     return f"{n / 1024 / 1024:.2f} MB"
 
 
-# main functionality
+##
+## main functionality
+##
 def cmd_update(_args: argparse.Namespace) -> None:
     _confirm("Check for updates without applying them? [y/N]:")
 
@@ -117,7 +123,9 @@ def cmd_update(_args: argparse.Namespace) -> None:
                 _log.info("brew: up to date")
 
 
-def cmd_upgrade(_args: argparse.Namespace, reboot: bool = False) -> None:
+def cmd_upgrade(_args: argparse.Namespace) -> None:
+    reboot = getattr(_args, "reboot", False)
+
     if reboot:
         _confirm("Apply all available updates and reboot? [y/N]:")
     else:
@@ -133,7 +141,7 @@ def cmd_upgrade(_args: argparse.Namespace, reboot: bool = False) -> None:
     _run(["brew", "upgrade", "--force"])
 
     _log.info("==> Done.")
-    
+
     if reboot:
         _log.info("==> Rebooting...")
         _run(["sudo", "reboot"])
@@ -168,6 +176,9 @@ def cmd_cleanup(_args: argparse.Namespace) -> None:
     )
 
 
+##
+## entrypoint
+##
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog=PROGRAM_NAME,
@@ -181,16 +192,18 @@ def main() -> None:
         help="Check for available updates without applying them",
         description="Checks bootc, flatpak, and brew for available updates. Nothing is installed or changed.",
     )
-    sub.add_parser(
+
+    upgrade_parser = sub.add_parser(
         "upgrade",
         help="Apply all available updates",
         description="Runs bootc upgrade, flatpak update, and brew upgrade. A reboot may be required for bootc changes.",
     )
-    sub.add_parser(
-        "upgrade-reboot",
-        help="Apply all available updates, then reboot",
-        description="Same as 'upgrade', then reboots the system immediately.",
+    upgrade_parser.add_argument(
+        "--reboot",
+        action="store_true",
+        help="Reboot after applying updates",
     )
+
     sub.add_parser(
         "cleanup",
         help="Remove unused flatpak runtimes and old brew packages",
@@ -200,10 +213,9 @@ def main() -> None:
     args = parser.parse_args()
 
     dispatch = {
-        "update":         cmd_update,
-        "upgrade":        cmd_upgrade,
-        "upgrade-reboot": lambda args: cmd_upgrade(args, reboot=True),
-        "cleanup":        cmd_cleanup,
+        "update": cmd_update,
+        "upgrade": cmd_upgrade,
+        "cleanup": cmd_cleanup,
     }
     dispatch[args.command](args)
 
