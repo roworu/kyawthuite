@@ -7,7 +7,7 @@ set -ouex pipefail
 # swap system firefox to flatpak version
 dnf5 -y remove firefox firefox-langpacks
 echo /proc/sys/user/max_user_namespaces
-chmod u+s /usr/bin/bwrap
+chmod u+s /usr/bin/bwrap || true
 flatpak install --noninteractive --system flathub org.mozilla.firefox
 
 # remove update tray icon
