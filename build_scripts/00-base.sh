@@ -6,11 +6,12 @@ set -ouex pipefail
 shopt -s nullglob
 
 ###
-###  dnf setup
+###  dnf
 ###
 
-dnf5 -y install dnf5-plugins
 echo -n "max_parallel_downloads=10" >>/etc/dnf/dnf.conf
+
+dnf5 -y upgrade --refresh
 
 FEDORA_VERSION="$(rpm -E %fedora)"
 dnf5 -y copr enable bieszczaders/kernel-cachyos-lto "fedora-${FEDORA_VERSION}-x86_64"
