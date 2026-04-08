@@ -9,10 +9,6 @@ shopt -s nullglob
 ###  dnf
 ###
 
-echo -n "max_parallel_downloads=10" >>/etc/dnf/dnf.conf
-
-dnf5 -y upgrade --refresh
-
 FEDORA_VERSION="$(rpm -E %fedora)"
 dnf5 -y copr enable bieszczaders/kernel-cachyos-lto "fedora-${FEDORA_VERSION}-x86_64"
 dnf5 -y copr enable bieszczaders/kernel-cachyos-addons "fedora-${FEDORA_VERSION}-x86_64"
