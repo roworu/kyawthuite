@@ -88,7 +88,6 @@ user_services=(
 )
 
 mask_services=(
-  # we add these repos manually
   flatpak-add-fedora-repos.service
   systemd-remount-fs.service
   # speed up boot time
@@ -96,9 +95,11 @@ mask_services=(
   # to not mess with custom kernel installation
   akmods-keygen.target
   akmods-keygen@akmods-keygen.service
-  # disable automatic updates
+  # disable automatic updates (both timers and services)
   bootc-fetch-apply-updates.timer
   rpm-ostree-automatic.timer
+  bootc-fetch-apply-updates.service
+  rpm-ostree-automatic.service
 )
 
 # enable/disable system services
