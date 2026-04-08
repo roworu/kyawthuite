@@ -9,13 +9,14 @@ dnf5 -y remove firefox firefox-langpacks
 flatpak install --noninteractive --system flathub org.mozilla.firefox
 
 # remove update tray icon
-rm /etc/xdg/autostart/org.kde.discover.notifier.desktop || true
+rm -vf /etc/xdg/autostart/org.kde.discover.notifier.desktop
 
-rm -vf /usr/share/applications/org.kde.kdebugsettings.desktop || true
-rm -vf /usr/share/applications/org.kde.khelpcenter.desktop || true
-rm -vf /usr/share/applications/org.kde.plasma-welcome.desktop || true
-rm -vf /usr/share/applications/htop.desktop || true
-rm -vf /usr/share/applications/nvtop.desktop || true
+# remove some apps from start menu
+rm -vf /usr/share/applications/org.kde.kdebugsettings.desktop
+rm -vf /usr/share/applications/org.kde.khelpcenter.desktop
+rm -vf /usr/share/applications/org.kde.plasma-welcome.desktop
+rm -vf /usr/share/applications/htop.desktop
+rm -vf /usr/share/applications/nvtop.desktop
 
 # wallpapers
 # ln -sf /usr/share/wallpapers/kw-wallpaper.jxl /usr/share/backgrounds/default.jxl
