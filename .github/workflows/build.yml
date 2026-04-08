@@ -43,6 +43,11 @@ jobs:
     timeout-minutes: 30
 
     steps:
+
+      - name: Free Disk Space (Ubuntu)
+        if: ${{ steps.check_mnt.outputs.mnt_is_there == '1' }}
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+
       - name: Change image name depending on build flavor
         env:
           BUILD_FLAVOR: ${{ matrix.flavor }}
@@ -137,21 +142,34 @@ jobs:
 
       - name: Run Rechunker
         id: rechunk
-        run: |
-          container=$(sudo buildah from raw-img)
-          mnt=$(sudo buildah mount $container)
-          sudo bash -c "rm -rf $mnt/run/.* $mnt/run/* $mnt/tmp/.* $mnt/tmp/*"
-          sudo buildah umount $container
-          sudo buildah commit --identity-label=false --rm $container raw-img
+        uses: ublue-os/legacy-rechunk@a925083d9af7cb04b3e2a6e8c01bfa495f38b710 # v1.0.0
+        with:
+          rechunk: 'ghcr.io/ublue-os/legacy-rechunk:v1.0.0-x86_64'
+          ref: 'raw-img'
+          prev-ref: '${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.DEFAULT_TAG }}'
+          skip_compression: false
+          version: '${{ steps.metadata.outputs.tags }}'
+          labels: '${{ steps.metadata.outputs.labels }}'
 
-          sudo podman run --rm --privileged --volume /var/lib/containers:/var/lib/containers \
-              localhost/raw-img \
-              rpm-ostree compose build-chunked-oci \
-              --bootc --max-layers 96 --format-version 2 \
-              --from localhost/raw-img --output containers-storage:localhost/chunked-img
-          sudo podman untag raw-img
-
-          echo "ref=containers-storage:localhost/chunked-img" >> "$GITHUB_OUTPUT"
+# FIXME:
+# usage of newer rechunker failing due to differences in build stage
+#      - name: Run Rechunker
+#        id: rechunk
+#        run: |
+#          container=$(sudo buildah from raw-img)
+#          mnt=$(sudo buildah mount $container)
+#          sudo bash -c "rm -rf $mnt/run/.* $mnt/run/* $mnt/tmp/.* $mnt/tmp/*"
+#          sudo buildah umount $container
+#          sudo buildah commit --identity-label=false --rm $container raw-img
+#
+#          sudo podman run --rm --privileged --volume /var/lib/containers:/var/lib/containers \
+#              localhost/raw-img \
+#              rpm-ostree compose build-chunked-oci \
+#              --bootc --max-layers 96 --format-version 2 \
+#              --from localhost/raw-img --output containers-storage:localhost/chunked-img
+#          sudo podman untag raw-img
+#
+#          echo "ref=containers-storage:localhost/chunked-img" >> "$GITHUB_OUTPUT"
 
       - name: Load in podman and tag
         run: |
