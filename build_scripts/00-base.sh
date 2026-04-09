@@ -17,7 +17,7 @@ dnf5 -y copr enable bieszczaders/kernel-cachyos-addons "fedora-${FEDORA_VERSION}
 dnf5 -y config-manager setopt "*fedora*".exclude="kernel-core-* kernel-modules-* kernel-uki-virt-*"
 dnf5 -y config-manager setopt "*updates*".exclude="kernel-core-* kernel-modules-* kernel-uki-virt-*"
 
-# shell setup
+# shell
 dnf5 -y install zsh fastfetch
 
 ZSH_PATH=/usr/bin/zsh
@@ -29,6 +29,11 @@ if grep -q '^SHELL=' /etc/default/useradd; then
 else
   echo "SHELL=${ZSH_PATH}" >> /etc/default/useradd
 fi
+
+# cli tools
+dnf5 -y install --nogpgcheck --repofrompath \
+  'terra,https://repos.fyralabs.com/terra$releasever' terra-release
+dnf5 -y install eza bat ripgrep fd
 
 # virtualization tools, for ui install virt-manager from flatpak
 dnf5 -y install qemu-kvm libvirt virt-install guestfs-tools
