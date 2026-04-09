@@ -34,6 +34,7 @@ fi
 dnf5 -y install --nogpgcheck --repofrompath \
   'terra,https://repos.fyralabs.com/terra$releasever' terra-release
 dnf5 -y install eza bat ripgrep fd
+find /etc/yum.repos.d/ -maxdepth 1 -type f -name '*terra*.repo' -exec rm -f {} +
 
 # virtualization tools, for ui install virt-manager from flatpak
 dnf5 -y install qemu-kvm libvirt virt-install guestfs-tools
