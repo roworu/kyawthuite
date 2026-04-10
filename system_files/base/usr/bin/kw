@@ -229,7 +229,9 @@ def main() -> None:
     dispatch[args.command](args)
     
     if getattr(args, "wait", False):
-        input(f"{BLUE_COLOR}[{PROGRAM_NAME}] Press Enter to exit...{RESET}")
+        print(f"{BLUE_COLOR}[{PROGRAM_NAME}] Press Enter to exit...{RESET}", end="", flush=True)
+        with open("/dev/tty", "r") as tty:
+            tty.readline()
 
 
 if __name__ == "__main__":
