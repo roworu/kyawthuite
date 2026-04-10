@@ -4,7 +4,16 @@ echo "::group:: ===$(basename "$0")==="
 
 set -ouex pipefail
 
-dnf5 -y remove firefox firefox-langpacks
+dnf5 -y install krdp
+
+dnf5 -y remove firefox firefox-langpacks \
+    plasma-welcome plasma-drkonqi plasma-welcome-fedora plasma-discover-kns kcharselect
+
+additional_flatpaks=(
+    org.kde.gwenview
+    org.kde.okular
+)
+printf "%s\n" "${additional_flatpaks[@]}" >> /usr/share/ublue-os/kyawthuite/flatpak/install
 
 # remove update tray icon
 rm -vf /etc/xdg/autostart/org.kde.discover.notifier.desktop
