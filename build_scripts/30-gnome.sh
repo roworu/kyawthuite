@@ -9,6 +9,7 @@ dnf5 -y remove firefox firefox-langpacks \
     gnome-shell-extension-launch-new-instance gnome-shell-extension-places-menu gnome-shell-extension-window-list
 
 additional_flatpaks=(
+    org.mozilla.firefox
     io.missioncenter.MissionCenter
 )
 printf "%s\n" "${additional_flatpaks[@]}" >> /usr/share/ublue-os/kyawthuite/flatpak/install

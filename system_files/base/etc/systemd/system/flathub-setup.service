@@ -1,5 +1,6 @@
 [Unit]
-Description=Install fpatpaks; install Flathub repo
+Description=Install flatpaks; install Flathub repo
+ConditionPathExists=!/var/lib/flatpak/flatpak-setup.done
 After=network-online.target
 Wants=network-online.target
 
@@ -10,6 +11,7 @@ ExecStart=/usr/bin/flatpak remote-modify --system --enable flathub
 ExecStart=/usr/bin/flatpak remote-add --system --if-not-exists --disable --title "Fedora Flatpaks" fedora oci+https://registry.fedoraproject.org
 ExecStart=/usr/bin/flatpak remote-add --system --if-not-exists --disable --title "Fedora Flatpaks (testing)" fedora-testing oci+https://registry.fedoraproject.org#testing
 ExecStart=/bin/bash -c 'xargs -r -a /usr/share/ublue-os/kyawthuite/flatpak/install /usr/bin/flatpak install --noninteractive --system flathub'
+ExecStartPost=/usr/bin/touch /var/lib/flatpak/flatpak-setup.done
 
 [Install]
 WantedBy=default.target

@@ -10,6 +10,7 @@ dnf5 -y remove firefox firefox-langpacks \
     plasma-welcome plasma-drkonqi plasma-welcome-fedora plasma-discover-kns kcharselect
 
 additional_flatpaks=(
+    org.mozilla.firefox
     org.kde.gwenview
     org.kde.okular
 )

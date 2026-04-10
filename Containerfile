@@ -150,7 +150,7 @@ RUN bootc container lint
 ### i3 image
 ###
 
-FROM ghcr.io/ublue-os/kinoite-main:latest AS kyawthuite-i3
+FROM ghcr.io/ublue-os/base-main:latest AS kyawthuite-i3
 
 COPY system_files/base /
 COPY system_files/plasma /
@@ -160,5 +160,11 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \
     /usr/bin/systemctl preset brew-setup.service && \
     /usr/bin/systemctl preset brew-update.timer
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/var \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/00-base.sh
 
 RUN bootc container lint
