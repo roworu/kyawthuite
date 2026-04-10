@@ -1,7 +1,7 @@
 [Unit]
 Description=Install fpatpaks; install Flathub repo
+After=network-online.target
 Wants=network-online.target
-After=local-fs.target
 
 [Service]
 Type=oneshot
