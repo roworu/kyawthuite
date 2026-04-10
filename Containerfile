@@ -20,18 +20,22 @@ RUN --mount=type=cache,dst=/var/cache \
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
+    --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/00-base.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/30-plasma.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/90-finilize.sh
+    /ctx/90-finilize.sh && \
+    /usr/bin/systemctl --global enable flathub-setup.service
 
 RUN bootc container lint
 
