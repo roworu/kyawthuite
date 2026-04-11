@@ -1,14 +1,12 @@
-ARG FEDORA_VERSION=43
-
 FROM scratch AS ctx
 COPY build_scripts /
 
 ###
 ### base plasma image
 ###
-
+ARG FEDORA_VERSION=43
 FROM ghcr.io/ublue-os/kinoite-main:${FEDORA_VERSION} AS kinoite
-
+ARG FEDORA_VERSION
 COPY system_files/base /
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
@@ -34,9 +32,9 @@ RUN bootc container lint
 ###
 ### plasma-nvidia desktop image
 ###
-
+ARG FEDORA_VERSION=43
 FROM ghcr.io/ublue-os/kinoite-nvidia:${FEDORA_VERSION} AS kinoite-nvidia
-
+ARG FEDORA_VERSION
 COPY system_files/base /
 
 COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-${FEDORA_VERSION}-x86_64 / /tmp/akmods-nvidia
