@@ -39,19 +39,29 @@ packages=(
   kernel-cachyos-lto-core
   kernel-cachyos-lto-devel-matched
   kernel-cachyos-lto-modules
-
-  # nvidia specific packages
-  akmods
-  nvidia-driver
-  nvidia-driver-cuda
-  nvidia-kmod-common
 )
 
 dnf5 -y install "${packages[@]}"
 dnf5 versionlock add "${packages[@]}"
 
+dnf5 -y install akmods akmod-nvidia
 KERNEL_VERSION=$(ls /usr/lib/modules | head -n1)
 akmods --force --kernels "${KERNEL_VERSION}" --kmod "nvidia"
+
+
+nvidia_driver_packages=(
+    # nvidia specific packages
+    nvidia-driver-cuda
+    libnvidia-fbc
+    libva-nvidia-driver
+    nvidia-driver
+    nvidia-modprobe
+    nvidia-persistenced
+    nvidia-settings
+)
+
+dnf5 -y install --enablerepo=fedora-nvidia "${nvidia_driver_packages[@]}"
+
 
 dnf5 -y remove firefox firefox-langpacks \
     plasma-welcome plasma-drkonqi plasma-welcome-fedora plasma-discover-kns kcharselect
