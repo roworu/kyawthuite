@@ -77,3 +77,4 @@ install_nvidia_drivers() {
 
 if [ "${INSTALL_NVIDIA:-}" = "TRUE" ]; then
   install_nvidia_drivers
+fi
