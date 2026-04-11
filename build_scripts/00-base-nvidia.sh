@@ -27,7 +27,7 @@ chmod +x  05-rpmostree.install 50-dracut.install
 popd
 
 for pkg in kernel kernel-core kernel-modules kernel-modules-core; do
-  dnf5 -y remove $pkg
+  dnf5 -y remove --no-autoremove $pkg
 done
 rm -rf /usr/lib/modules/*
 rm -rf /boot/*
