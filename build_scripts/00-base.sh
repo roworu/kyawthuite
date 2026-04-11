@@ -37,5 +37,43 @@ packages=(
   kernel-cachyos-lto-devel-matched
   kernel-cachyos-lto-modules
 )
+
 dnf5 -y install "${packages[@]}"
 dnf5 versionlock add "${packages[@]}"
+
+install_nvidia_drivers() {
+
+    nvidia_driver_packages=(
+      nvidia-driver-cuda
+      libnvidia-fbc
+      libva-nvidia-driver
+      nvidia-driver
+      nvidia-modprobe
+      nvidia-persistenced
+      nvidia-settings
+    )
+
+    KERNEL_VERSION=$(ls /usr/lib/modules | head -n1)
+
+    dnf5 config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-nvidia.repo
+    dnf5 config-manager setopt fedora-nvidia.enabled=0
+    sed -i '/^enabled=/a\priority=90' /etc/yum.repos.d/fedora-nvidia.repo
+
+    dnf5 -y install akmods
+    dnf5 -y install --setopt=tsflags=noscripts --enablerepo=fedora-nvidia akmod-nvidia
+
+    akmods --force --kernels "${KERNEL_VERSION}" --kmod "nvidia"
+    dnf5 -y install --enablerepo=fedora-nvidia "${nvidia_driver_packages[@]}"
+    dnf5 versionlock add "${nvidia_driver_packages[@]}"
+
+    dnf5 config-manager addrepo --from-repofile=https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo
+    dnf5 config-manager setopt nvidia-container-toolkit.enabled=0
+    dnf5 config-manager setopt nvidia-container-toolkit.gpgcheck=1
+
+    dnf5 -y install --enablerepo=nvidia-container-toolkit \
+        nvidia-container-toolkit
+
+}
+
+if [ "${INSTALL_NVIDIA:-}" = "TRUE" ]; then
+  install_nvidia_drivers

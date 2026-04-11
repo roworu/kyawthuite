@@ -26,11 +26,11 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
 RUN bootc container lint
 
 ###
-### plasma-nvidia desktop image
+### plasma-nvidia image
 ###
 FROM ghcr.io/ublue-os/kinoite-nvidia:43 AS kinoite-nvidia
-#COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-43-x86_64 / /tmp/akmods-nvidia
-#RUN find /tmp/akmods-nvidia
+ARG INSTALL_NVIDIA="TRUE"
+ENV INSTALL_NVIDIA=${INSTALL_NVIDIA}
 
 COPY system_files/base /
 COPY system_files/nvidia /
@@ -40,7 +40,7 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/00-base-nvidia.sh
+    /ctx/00-base.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
