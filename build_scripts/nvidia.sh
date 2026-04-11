@@ -42,5 +42,5 @@ packages=(
 dnf5 -y install "${packages[@]}"
 dnf5 versionlock add "${packages[@]}"
 
-KERNEL_VERSION=$(ls /usr/lib/modules | head -n1) \
+KERNEL_VERSION=$(ls /usr/lib/modules | head -n1)
 akmods --force --kernels "${KERNEL_VERSION}" --kmod "nvidia"
