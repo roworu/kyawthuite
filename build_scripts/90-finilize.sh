@@ -84,8 +84,6 @@ build_initramfs() {
 # 4) cleanup final image
 cleanup() {
     find /etc/yum.repos.d/ -maxdepth 1 -type f -name '*.repo' ! -name 'fedora.repo' ! -name 'fedora-updates.repo' ! -name 'fedora-updates-testing.repo' -exec rm -f {} +
-
-    dnf5 clean all || true
     rm -rfv /tmp/*
     rm -rfv /var/log/dnf5.log
 }
