@@ -33,7 +33,7 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
 # cli tools
 dnf5 -y install --nogpgcheck --repofrompath \
   'terra,https://repos.fyralabs.com/terra$releasever' terra-release
-dnf5 -y install eza bat ripgrep fd fastfetch
+dnf5 -y install eza bat ripgrep fd fastfetch jetbrainsmono-nerd-fonts
 find /etc/yum.repos.d/ -maxdepth 1 -type f -name '*terra*.repo' -exec rm -f {} +
 
 # virtualization tools, for ui install virt-manager from flatpak
