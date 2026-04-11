@@ -30,7 +30,6 @@ done
 rm -rf /usr/lib/modules/*
 rm -rf /boot/*
 
-# install and lock cachy kernel
 packages=(
   kernel-cachyos-lto
   kernel-cachyos-lto-core
@@ -40,6 +39,10 @@ packages=(
 
 dnf5 -y install "${packages[@]}"
 dnf5 versionlock add "${packages[@]}"
+
+###
+### nvidia drivers install
+###
 
 install_nvidia_drivers() {
 
