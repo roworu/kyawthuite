@@ -44,7 +44,8 @@ packages=(
 dnf5 -y install "${packages[@]}"
 dnf5 versionlock add "${packages[@]}"
 
-dnf5 -y install akmods akmod-nvidia
+dnf5 -y install akmods
+dnf5 -y install --setopt=tsflags=noscripts --enablerepo=fedora-nvidia akmod-nvidia
 KERNEL_VERSION=$(ls /usr/lib/modules | head -n1)
 akmods --force --kernels "${KERNEL_VERSION}" --kmod "nvidia"
 
