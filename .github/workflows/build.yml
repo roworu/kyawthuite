@@ -38,6 +38,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     permissions:
+      actions: read
       contents: read
       packages: write
       id-token: write
@@ -84,15 +85,52 @@ jobs:
         run: |
           echo "date=$(date -u +%Y\-%m\-%d\T%H\:%M\:%S\Z)" >> $GITHUB_OUTPUT
 
+      - name: Compute daily build sequence
+        id: build_seq
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_NUMBER: ${{ github.run_number }}
+          EVENT_NAME: ${{ github.event_name }}
+          FEDORA_VERSION: ${{ env.FEDORA_VERSION }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          TAG_DATE="$(date -u +%Y%m%d)"
+          START_OF_DAY="$(date -u +%Y-%m-%d)T00:00:00Z"
+          START_OF_NEXT_DAY="$(date -u -d tomorrow +%Y-%m-%d)T00:00:00Z"
+          API_URL="https://api.github.com/repos/${REPOSITORY}/actions/workflows/build.yml/runs?per_page=100&created=${START_OF_DAY}..${START_OF_NEXT_DAY}"
+
+          RUNS_JSON="$(mktemp)"
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "$API_URL" > "$RUNS_JSON"
+
+          DAILY_SEQUENCE="$(jq \
+            --argjson run_number "${RUN_NUMBER}" \
+            --arg event_name "${EVENT_NAME}" \
+            '[.workflow_runs[] | select(.event == $event_name and .run_number <= $run_number)] | length' \
+            "$RUNS_JSON")"
+          rm -f "$RUNS_JSON"
+
+          if [ "$DAILY_SEQUENCE" -lt 1 ]; then
+            DAILY_SEQUENCE=1
+          fi
+
+          echo "daily_sequence=${DAILY_SEQUENCE}" >> "$GITHUB_OUTPUT"
+          echo "date_tag=${TAG_DATE}.${DAILY_SEQUENCE}" >> "$GITHUB_OUTPUT"
+          echo "version_tag=${FEDORA_VERSION}.${TAG_DATE}.${DAILY_SEQUENCE}" >> "$GITHUB_OUTPUT"
+
       - name: Image Metadata
         uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
         id: metadata
         with:
           tags: |
-            type=raw,value=${{ env.TAG_PREFIX }}{{date 'YYYYMMDD'}}
+            type=raw,value=${{ env.TAG_PREFIX }}${{ steps.build_seq.outputs.date_tag }}
             type=raw,value=${{ env.TAG_PREFIX }}${{ env.DEFAULT_TAG }}
             type=raw,value=${{ env.TAG_PREFIX }}${{ env.FEDORA_VERSION }}
-            type=raw,value=${{ env.TAG_PREFIX }}${{ env.FEDORA_VERSION }}.{{date 'YYYYMMDD'}}
+            type=raw,value=${{ env.TAG_PREFIX }}${{ steps.build_seq.outputs.version_tag }}
             type=sha,enable=${{ github.event_name == 'pull_request' }}
             type=ref,event=pr
           labels: |
@@ -103,7 +141,7 @@ jobs:
             org.opencontainers.image.title=${{ env.IMAGE_NAME }}
             org.opencontainers.image.url=https://github.com/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}/tree/${{ github.sha }}
             org.opencontainers.image.vendor=${{ github.repository_owner }}
-            org.opencontainers.image.version=${{ env.FEDORA_VERSION }}.{{date 'YYYYMMDD'}}
+            org.opencontainers.image.version=${{ steps.build_seq.outputs.version_tag }}
             containers.bootc=1
           sep-tags: ' '
           sep-annotations: ' '
