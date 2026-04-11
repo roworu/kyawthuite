@@ -74,8 +74,6 @@ install_nvidia_drivers() {
 
     dnf5 -y install --enablerepo=nvidia-container-toolkit nvidia-container-toolkit
 
-    cat /var/cache/akmods/nvidia/*
-
 }
 
 if [ "${INSTALL_NVIDIA:-}" = "TRUE" ]; then
