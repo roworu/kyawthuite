@@ -28,7 +28,7 @@ RUN bootc container lint
 ###
 ### plasma-nvidia image
 ###
-FROM ghcr.io/ublue-os/kinoite-nvidia:43 AS kinoite-nvidia
+FROM ghcr.io/ublue-os/kinoite-main:43 AS kinoite-nvidia
 ARG INSTALL_NVIDIA="TRUE"
 ENV INSTALL_NVIDIA=${INSTALL_NVIDIA}
 
