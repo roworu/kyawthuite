@@ -4,17 +4,8 @@ echo "::group:: ===$(basename "$0")==="
 
 set -ouex pipefail
 
-dnf5 -y install krdp
-
 dnf5 -y remove firefox firefox-langpacks \
     plasma-welcome plasma-drkonqi plasma-welcome-fedora plasma-discover-kns kcharselect
-
-additional_flatpaks=(
-    org.mozilla.firefox
-    org.kde.gwenview
-    org.kde.okular
-)
-printf "%s\n" "${additional_flatpaks[@]}" >> /usr/share/ublue-os/kyawthuite/flatpak/install
 
 # remove update tray icon
 rm -vf /etc/xdg/autostart/org.kde.discover.notifier.desktop
@@ -22,11 +13,5 @@ rm -vf /etc/xdg/autostart/org.kde.discover.notifier.desktop
 # remove some apps from start menu
 rm -vf /usr/share/applications/org.kde.kdebugsettings.desktop
 rm -vf /usr/share/applications/org.kde.khelpcenter.desktop
-rm -vf /usr/share/applications/org.kde.plasma-welcome.desktop
 rm -vf /usr/share/applications/htop.desktop
 rm -vf /usr/share/applications/nvtop.desktop
-
-# wallpapers
-# ln -sf /usr/share/wallpapers/kw-wallpaper.jxl /usr/share/backgrounds/default.jxl
-# ln -sf /usr/share/wallpapers/kw-wallpaper-darker.jxl /usr/share/backgrounds/default-dark.jxl
-# rm -f /usr/share/backgrounds/default.xml

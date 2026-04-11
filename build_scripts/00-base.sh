@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "::group:: ===$(basename "$0")==="
+echo "::group:: ===Base==="
 
 set -ouex pipefail
 shopt -s nullglob
@@ -13,63 +13,21 @@ FEDORA_VERSION="$(rpm -E %fedora)"
 dnf5 -y copr enable bieszczaders/kernel-cachyos-lto "fedora-${FEDORA_VERSION}-x86_64"
 dnf5 -y copr enable bieszczaders/kernel-cachyos-addons "fedora-${FEDORA_VERSION}-x86_64"
 
-# Keep Fedora kernel packages from replacing Cachy kernel during upgrades.
 dnf5 -y config-manager setopt "*fedora*".exclude="kernel-core-* kernel-modules-* kernel-uki-virt-*"
 dnf5 -y config-manager setopt "*updates*".exclude="kernel-core-* kernel-modules-* kernel-uki-virt-*"
 
-# shell
 dnf5 -y install zsh git
-
-echo /usr/bin/zsh >> /etc/shells
-echo "SHELL=/usr/bin/zsh" >> /etc/default/useradd
-
-git clone https://github.com/ohmyzsh/ohmyzsh.git \
-    /etc/skel/.oh-my-zsh --depth=1
-git clone https://github.com/zsh-users/zsh-autosuggestions.git \
-    /etc/skel/.oh-my-zsh/plugins/zsh-autosuggestions --depth=1
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
-    /etc/skel/.oh-my-zsh/plugins/zsh-syntax-highlighting --depth=1
-
-# cli tools
-dnf5 -y install --nogpgcheck --repofrompath \
-  'terra,https://repos.fyralabs.com/terra$releasever' terra-release
-dnf5 -y install eza bat ripgrep fd fastfetch jetbrainsmono-nerd-fonts
-find /etc/yum.repos.d/ -maxdepth 1 -type f -name '*terra*.repo' -exec rm -f {} +
-
-# virtualization tools, for ui install virt-manager from flatpak
-dnf5 -y install qemu-kvm libvirt virt-install guestfs-tools
-
-# flatpak setup
-flatpak remote-add --if-not-exists --system flathub /etc/flatpak/remotes.d/flathub.flatpakrepo
-flatpak remote-modify --system --enable flathub
-
-###
-### image info
-###
-
-DATE=$(date +%Y%m%d)
-
-sed -i -f - /usr/lib/os-release <<EOF
-s|^NAME=.*|NAME=\"kyawthuite\"|
-s|^ID=.*|ID=\"kyawthuite\"|
-s|^VERSION=.*|VERSION=\"${FEDORA_VERSION}.${DATE}\"|
-s|^PRETTY_NAME=.*|PRETTY_NAME=\"kyawthuite ${FEDORA_VERSION}.${DATE}\"|
-s|^DEFAULT_HOSTNAME=.*|DEFAULT_HOSTNAME="kyawthuite"|
-
-EOF
 
 ###
 ### kernel install
 ###
 
-# disable rpm/dracut kernel hooks
 pushd /usr/lib/kernel/install.d
 printf '%s\n' '#!/bin/sh' 'exit 0' > 05-rpmostree.install
 printf '%s\n' '#!/bin/sh' 'exit 0' > 50-dracut.install
 chmod +x  05-rpmostree.install 50-dracut.install
 popd
 
-# remove stock kernels and modules
 for pkg in kernel kernel-core kernel-modules kernel-modules-core; do
   dnf5 -y remove $pkg
 done
@@ -85,54 +43,3 @@ packages=(
 )
 dnf5 -y install "${packages[@]}"
 dnf5 versionlock add "${packages[@]}"
-
-###
-### services
-###
-
-system_services=(
-  podman.socket
-  flathub-setup.service
-  systemd-resolved.service
-  libvirtd.service
-)
-
-user_services=(
-  podman.socket
-)
-
-mask_services=(
-  flatpak-add-fedora-repos.service
-  systemd-remount-fs.service
-  # speed up boot time
-  NetworkManager-wait-online.service
-  # to not mess with custom kernel installation
-  akmods-keygen.target
-  akmods-keygen@akmods-keygen.service
-  # disable automatic updates (both timers and services)
-  bootc-fetch-apply-updates.timer
-  rpm-ostree-automatic.timer
-  bootc-fetch-apply-updates.service
-  rpm-ostree-automatic.service
-)
-
-# enable/disable system services
-systemctl enable "${system_services[@]}"
-systemctl mask "${mask_services[@]}"
-systemctl --global enable "${user_services[@]}"
-
-preset_file="/usr/lib/systemd/system-preset/01-kyawthuite.preset"
-touch "$preset_file"
-for service in "${system_services[@]}"; do
-  echo "enable $service" >> "$preset_file"
-done
-
-# enable user services
-mkdir -p "/etc/systemd/user-preset/"
-preset_file="/etc/systemd/user-preset/01-kyawthuite.preset"
-touch "$preset_file"
-for service in "${user_services[@]}"; do
-  echo "enable $service" >> "$preset_file"
-done
-
-systemctl --global preset-all
