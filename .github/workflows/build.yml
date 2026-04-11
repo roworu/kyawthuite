@@ -130,6 +130,40 @@ jobs:
           FEDORA_VERSION=${{ env.FEDORA_VERSION }}
           EOF
 
+      - name: DNF Package Cache Prep
+        id: cache-prep
+        env:
+          BUILD_FLAVOR: ${{ matrix.flavor }}
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          FEDORA_VERSION: ${{ env.FEDORA_VERSION }}
+        run: |
+          set -euo pipefail
+
+          CACHE_FLAVOR="${BUILD_FLAVOR}"
+          if [ -z "${CACHE_FLAVOR}" ]; then
+            CACHE_FLAVOR="base"
+          fi
+
+          CACHE_NAME="f${FEDORA_VERSION}-${CACHE_FLAVOR}"
+          ALLOW_CACHE_WRITE="false"
+
+          # PR caches are not written to avoid replacing branch caches.
+          if [ "${EVENT_NAME}" != "pull_request" ] && [ "${REF_NAME}" = "main" ]; then
+            ALLOW_CACHE_WRITE="true"
+          fi
+
+          echo "cache_name=${CACHE_NAME}" >> "$GITHUB_OUTPUT"
+          echo "allow_cache_write=${ALLOW_CACHE_WRITE}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore DNF package cache
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        env:
+          CACHE_NAME: ${{ steps.cache-prep.outputs.cache_name }}
+        with:
+          path: /var/tmp/buildah-cache-*
+          key: ${{ runner.os }}-buildah-${{ env.CACHE_NAME }}
+
       - name: Build Image
         id: build_image
         run: |
@@ -138,6 +172,22 @@ jobs:
             --file Containerfile \
             --build-arg-file build_args.txt \
             --tag raw-img .
+
+      - name: Hack around permission issue caching
+        id: cache-perms
+        run: |
+          if [ -d /var/tmp/buildah-cache-0 ]; then
+            sudo chmod 777 --recursive /var/tmp/buildah-cache-0
+          fi
+
+      - name: Save DNF package cache
+        if: steps.cache-prep.outputs.allow_cache_write == 'true'
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        env:
+          CACHE_NAME: ${{ steps.cache-prep.outputs.cache_name }}
+        with:
+          path: /var/tmp/buildah-cache-*
+          key: ${{ runner.os }}-buildah-${{ env.CACHE_NAME }}
 
       - name: Run Rechunker
         id: rechunk
