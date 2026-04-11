@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-echo "::group:: ===$(basename "$0")==="
-
 set -ouex pipefail
 
 # 1) detect kernel version and paths

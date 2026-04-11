@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-echo "::group:: ===$(basename "$0")==="
-
 set -ouex pipefail
 
 dnf5 -y remove firefox firefox-langpacks \

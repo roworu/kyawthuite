@@ -32,6 +32,7 @@ RUN bootc container lint
 ###
 ### plasma-nvidia desktop image
 ###
+RUN echo "::group:: ===Pulling images==="
 ARG FEDORA_VERSION=43
 FROM ghcr.io/ublue-os/kinoite-nvidia:${FEDORA_VERSION} AS kinoite-nvidia
 COPY system_files/base /
@@ -41,8 +42,9 @@ COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-${FEDORA_VERSION}-x86_64 / 
 RUN find /tmp/akmods-nvidia
 
 ARG FEDORA_VERSION
-RUN dnf5 -y copr enable bieszczaders/kernel-cachyos-lto "fedora-${FEDORA_VERSION}-x86_64" \
-    dnf5 -y copr enable bieszczaders/kernel-cachyos-addons "fedora-${FEDORA_VERSION}-x86_64" \
+RUN echo "::group:: ===Installing CachyOS kernel==="
+RUN dnf5 -y copr enable bieszczaders/kernel-cachyos-lto \
+    dnf5 -y copr enable bieszczaders/kernel-cachyos-addons \
     dnf5 -y config-manager setopt "*fedora*".exclude="kernel-core-* kernel-modules-* kernel-uki-virt-*" \
     dnf5 -y config-manager setopt "*updates*".exclude="kernel-core-* kernel-modules-* kernel-uki-virt-*" \
     dnf5 -y install zsh git \
@@ -54,14 +56,17 @@ RUN dnf5 -y copr enable bieszczaders/kernel-cachyos-lto "fedora-${FEDORA_VERSION
     KERNEL_VERSION=$(ls /usr/lib/modules | head -n1) \
     akmods --force --kernels "${KERNEL_VERSION}" --kmod "nvidia"
 
+RUN echo "::group:: ===Running 30-plasma.sh==="
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/30-plasma.sh
 
+RUN echo "::group:: ===Running 90-finilize.sh==="
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/90-finilize.sh
 
+RUN echo "::group:: ===Starting container linter==="
 RUN bootc container lint

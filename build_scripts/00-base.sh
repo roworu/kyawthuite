@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-echo "::group:: ===Base==="
-
 set -ouex pipefail
 shopt -s nullglob
 
