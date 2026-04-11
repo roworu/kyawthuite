@@ -176,6 +176,8 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           REF_NAME: ${{ github.ref_name }}
           FEDORA_VERSION: ${{ env.FEDORA_VERSION }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
         run: |
           set -euo pipefail
 
@@ -185,6 +187,8 @@ jobs:
           fi
 
           CACHE_NAME="f${FEDORA_VERSION}-${CACHE_FLAVOR}"
+          CACHE_PREFIX="${{ runner.os }}-buildah-${CACHE_NAME}-"
+          CACHE_KEY="${CACHE_PREFIX}${RUN_ID}-${RUN_ATTEMPT}"
           ALLOW_CACHE_WRITE="false"
 
           # PR caches are not written to avoid replacing branch caches.
@@ -193,15 +197,18 @@ jobs:
           fi
 
           echo "cache_name=${CACHE_NAME}" >> "$GITHUB_OUTPUT"
+          echo "cache_prefix=${CACHE_PREFIX}" >> "$GITHUB_OUTPUT"
+          echo "cache_key=${CACHE_KEY}" >> "$GITHUB_OUTPUT"
           echo "allow_cache_write=${ALLOW_CACHE_WRITE}" >> "$GITHUB_OUTPUT"
 
       - name: Restore DNF package cache
+        id: cache-restore
         uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
-        env:
-          CACHE_NAME: ${{ steps.cache-prep.outputs.cache_name }}
         with:
           path: /var/tmp/buildah-cache-*
-          key: ${{ runner.os }}-buildah-${{ env.CACHE_NAME }}
+          key: ${{ steps.cache-prep.outputs.cache_key }}
+          restore-keys: |
+            ${{ steps.cache-prep.outputs.cache_prefix }}
 
       - name: Build Image
         id: build_image
@@ -220,13 +227,11 @@ jobs:
           fi
 
       - name: Save DNF package cache
-        if: steps.cache-prep.outputs.allow_cache_write == 'true'
+        if: steps.cache-prep.outputs.allow_cache_write == 'true' && steps.cache-restore.outputs.cache-hit != 'true'
         uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
-        env:
-          CACHE_NAME: ${{ steps.cache-prep.outputs.cache_name }}
         with:
           path: /var/tmp/buildah-cache-*
-          key: ${{ runner.os }}-buildah-${{ env.CACHE_NAME }}
+          key: ${{ steps.cache-restore.outputs.cache-primary-key }}
 
       - name: Run Rechunker
         id: rechunk
