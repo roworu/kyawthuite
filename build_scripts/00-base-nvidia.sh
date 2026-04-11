@@ -8,6 +8,7 @@ shopt -s nullglob
 ###
 
 FEDORA_VERSION="$(rpm -E %fedora)"
+dnf5 config-manager setopt keepcache=1
 dnf5 -y copr enable bieszczaders/kernel-cachyos-lto "fedora-${FEDORA_VERSION}-x86_64"
 dnf5 -y copr enable bieszczaders/kernel-cachyos-addons "fedora-${FEDORA_VERSION}-x86_64"
 
@@ -27,7 +28,7 @@ chmod +x  05-rpmostree.install 50-dracut.install
 popd
 
 for pkg in kernel kernel-core kernel-modules kernel-modules-core; do
-  dnf5 -y remove --no-autoremove $pkg
+  dnf5 -y remove $pkg
 done
 rm -rf /usr/lib/modules/*
 rm -rf /boot/*
@@ -38,13 +39,19 @@ packages=(
   kernel-cachyos-lto-core
   kernel-cachyos-lto-devel-matched
   kernel-cachyos-lto-modules
+
+  # nvidia specific packages
   akmods
+  nvidia-driver
+  nvidia-driver-cuda
+  nvidia-kmod-common
 )
+
 dnf5 -y install "${packages[@]}"
 dnf5 versionlock add "${packages[@]}"
 
-#KERNEL_VERSION=$(ls /usr/lib/modules | head -n1)
-# akmods --force --kernels "${KERNEL_VERSION}" --kmod "nvidia"
+KERNEL_VERSION=$(ls /usr/lib/modules | head -n1)
+akmods --force --kernels "${KERNEL_VERSION}" --kmod "nvidia"
 
 dnf5 -y remove firefox firefox-langpacks \
     plasma-welcome plasma-drkonqi plasma-welcome-fedora plasma-discover-kns kcharselect
