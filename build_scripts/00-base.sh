@@ -4,7 +4,7 @@ set -ouex pipefail
 shopt -s nullglob
 
 ###
-###  dnf
+###  kernel install
 ###
 
 FEDORA_VERSION="$(rpm -E %fedora)"
@@ -13,10 +13,6 @@ dnf5 -y copr enable bieszczaders/kernel-cachyos-addons "fedora-${FEDORA_VERSION}
 
 dnf5 -y config-manager setopt "*fedora*".exclude="kernel-core-* kernel-modules-* kernel-uki-virt-*"
 dnf5 -y config-manager setopt "*updates*".exclude="kernel-core-* kernel-modules-* kernel-uki-virt-*"
-
-###
-### kernel install
-###
 
 pushd /usr/lib/kernel/install.d
 printf '%s\n' '#!/bin/sh' 'exit 0' > 05-rpmostree.install
@@ -39,6 +35,7 @@ packages=(
 
 dnf5 -y install "${packages[@]}"
 dnf5 versionlock add "${packages[@]}"
+dnf5 -y install virtualbox-guest-additions # as it removed with `kernel-core` uninstalling
 
 ###
 ### nvidia drivers install

@@ -2,16 +2,16 @@
 
 set -ouex pipefail
 
-# 1) detect kernel version and paths
 KERNEL_VERSION=$(ls /usr/lib/modules | head -n1)
 KERNEL_IMAGE="/usr/lib/modules/$KERNEL_VERSION/vmlinuz"
-SIGN_DIR="/secureboot"
 
 mkdir -p /var/tmp
 chmod 1777 /var/tmp
 
-# 2) sign kernel + modules
 sign_kernel_and_modules() {
+
+  SIGN_DIR="/secureboot"
+
   # install required tools
   dnf5 -y install sbsigntools
 
@@ -55,7 +55,6 @@ sign_kernel_and_modules() {
   rm -f "$SIGN_DIR/MOK.key"
 }
 
-# 3) build initramfs
 build_initramfs() {
   echo "Building initramfs for kernel version: $KERNEL_VERSION"
 
@@ -81,13 +80,5 @@ build_initramfs() {
   chmod 0600 "/usr/lib/modules/$KERNEL_VERSION/initramfs.img"
 }
 
-# 4) cleanup final image
-cleanup() {
-    find /etc/yum.repos.d/ -maxdepth 1 -type f -name '*.repo' ! -name 'fedora.repo' ! -name 'fedora-updates.repo' ! -name 'fedora-updates-testing.repo' -exec rm -f {} +
-    rm -rfv /tmp/*
-    rm -rfv /var/log/dnf5.log
-}
-
 build_initramfs
-# sign_kernel_and_modules
-cleanup
+sign_kernel_and_modules
