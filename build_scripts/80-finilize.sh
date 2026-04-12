@@ -82,3 +82,21 @@ build_initramfs() {
 
 build_initramfs
 sign_kernel_and_modules
+
+
+cleanup() {
+
+    dnf5 -y clean all
+
+    rm -rfv /etc/yum.repos.d/*cachyos*
+    rm -rfv /tmp/*
+    rm -rfv /var/log/dnf5.log
+
+    # from 00-base.sh kernel installation
+    rm -fv /usr/lib/kernel/install.d/05-rpmostree.install
+    rm -fv /usr/lib/kernel/install.d/50-dracut.install
+
+}
+
+
+cleanup
