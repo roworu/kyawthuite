@@ -89,5 +89,5 @@ cleanup() {
 }
 
 build_initramfs
-sign_kernel_and_modules
+# sign_kernel_and_modules
 cleanup
