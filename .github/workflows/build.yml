@@ -169,52 +169,6 @@ jobs:
           FEDORA_VERSION=${{ env.FEDORA_VERSION }}
           EOF
 
-      - name: Build Cache Prep
-        id: cache-prep
-        env:
-          BUILD_FLAVOR: ${{ matrix.flavor }}
-          EVENT_NAME: ${{ github.event_name }}
-          REF_NAME: ${{ github.ref_name }}
-        run: |
-          set -euo pipefail
-
-          CACHE_FLAVOR="${BUILD_FLAVOR}"
-          if [ -z "${CACHE_FLAVOR}" ]; then
-            CACHE_FLAVOR="base"
-          fi
-
-          DNF_CACHE_KEY="buildah-${CACHE_FLAVOR}"
-          STORAGE_CACHE_KEY="buildah-storage-${CACHE_FLAVOR}"
-          ALLOW_CACHE_WRITE="false"
-
-          # PR caches are not written to avoid replacing branch caches.
-          if [ "${EVENT_NAME}" != "pull_request" ] && [ "${REF_NAME}" = "main" ]; then
-            ALLOW_CACHE_WRITE="true"
-          fi
-
-          echo "dnf_cache_key=${DNF_CACHE_KEY}" >> "$GITHUB_OUTPUT"
-          echo "storage_cache_key=${STORAGE_CACHE_KEY}" >> "$GITHUB_OUTPUT"
-          echo "allow_cache_write=${ALLOW_CACHE_WRITE}" >> "$GITHUB_OUTPUT"
-
-      - name: Prepare Buildah storage path permissions for cache restore
-        run: |
-          sudo mkdir -p /var/lib/containers/storage
-          sudo chmod 777 /var/lib/containers/storage
-
-      - name: Restore DNF package cache
-        id: cache-restore
-        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
-        with:
-          path: /var/tmp/buildah-cache-*
-          key: ${{ steps.cache-prep.outputs.dnf_cache_key }}
-
-      - name: Restore Buildah container storage cache
-        id: storage-cache-restore
-        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
-        with:
-          path: /var/lib/containers/storage
-          key: ${{ steps.cache-prep.outputs.storage_cache_key }}
-
       - name: Build Image
         id: build_image
         run: |
@@ -223,30 +177,6 @@ jobs:
             --file Containerfile \
             --build-arg-file build_args.txt \
             --tag raw-img .
-
-      - name: Hack around permission issue caching
-        id: cache-perms
-        run: |
-          if [ -d /var/tmp/buildah-cache-0 ]; then
-            sudo chmod 777 --recursive /var/tmp/buildah-cache-0
-          fi
-          if [ -d /var/lib/containers/storage ]; then
-            sudo chmod 777 --recursive /var/lib/containers/storage
-          fi
-
-      - name: Save DNF package cache
-        if: steps.cache-prep.outputs.allow_cache_write == 'true' && steps.cache-restore.outputs.cache-hit != 'true'
-        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
-        with:
-          path: /var/tmp/buildah-cache-*
-          key: ${{ steps.cache-prep.outputs.dnf_cache_key }}
-
-      - name: Save Buildah container storage cache
-        if: steps.cache-prep.outputs.allow_cache_write == 'true' && steps.storage-cache-restore.outputs.cache-hit != 'true'
-        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
-        with:
-          path: /var/lib/containers/storage
-          key: ${{ steps.cache-prep.outputs.storage_cache_key }}
 
       - name: Run Rechunker
         id: rechunk
