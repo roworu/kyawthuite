@@ -169,7 +169,7 @@ jobs:
           FEDORA_VERSION=${{ env.FEDORA_VERSION }}
           EOF
 
-      - name: DNF Package Cache Prep
+      - name: Build Cache Prep
         id: cache-prep
         env:
           BUILD_FLAVOR: ${{ matrix.flavor }}
@@ -183,7 +183,8 @@ jobs:
             CACHE_FLAVOR="base"
           fi
 
-          CACHE_KEY="buildah-${CACHE_FLAVOR}"
+          DNF_CACHE_KEY="buildah-${CACHE_FLAVOR}"
+          STORAGE_CACHE_KEY="buildah-storage-${CACHE_FLAVOR}"
           ALLOW_CACHE_WRITE="false"
 
           # PR caches are not written to avoid replacing branch caches.
@@ -191,15 +192,28 @@ jobs:
             ALLOW_CACHE_WRITE="true"
           fi
 
-          echo "cache_key=${CACHE_KEY}" >> "$GITHUB_OUTPUT"
+          echo "dnf_cache_key=${DNF_CACHE_KEY}" >> "$GITHUB_OUTPUT"
+          echo "storage_cache_key=${STORAGE_CACHE_KEY}" >> "$GITHUB_OUTPUT"
           echo "allow_cache_write=${ALLOW_CACHE_WRITE}" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare Buildah storage path permissions for cache restore
+        run: |
+          sudo mkdir -p /var/lib/containers/storage
+          sudo chmod 777 /var/lib/containers/storage
 
       - name: Restore DNF package cache
         id: cache-restore
         uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: /var/tmp/buildah-cache-*
-          key: ${{ steps.cache-prep.outputs.cache_key }}
+          key: ${{ steps.cache-prep.outputs.dnf_cache_key }}
+
+      - name: Restore Buildah container storage cache
+        id: storage-cache-restore
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: /var/lib/containers/storage
+          key: ${{ steps.cache-prep.outputs.storage_cache_key }}
 
       - name: Build Image
         id: build_image
@@ -216,13 +230,23 @@ jobs:
           if [ -d /var/tmp/buildah-cache-0 ]; then
             sudo chmod 777 --recursive /var/tmp/buildah-cache-0
           fi
+          if [ -d /var/lib/containers/storage ]; then
+            sudo chmod 777 --recursive /var/lib/containers/storage
+          fi
 
       - name: Save DNF package cache
         if: steps.cache-prep.outputs.allow_cache_write == 'true' && steps.cache-restore.outputs.cache-hit != 'true'
         uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: /var/tmp/buildah-cache-*
-          key: ${{ steps.cache-prep.outputs.cache_key }}
+          key: ${{ steps.cache-prep.outputs.dnf_cache_key }}
+
+      - name: Save Buildah container storage cache
+        if: steps.cache-prep.outputs.allow_cache_write == 'true' && steps.storage-cache-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: /var/lib/containers/storage
+          key: ${{ steps.cache-prep.outputs.storage_cache_key }}
 
       - name: Run Rechunker
         id: rechunk
