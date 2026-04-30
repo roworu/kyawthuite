@@ -79,7 +79,7 @@ build_image() {
 
   [[ -z "${loaded_image}" ]] && die "Failed to load image archive"
 
-  local candidate_image="localhost/test-target:latest"
+  local candidate_image="test-target:latest"
   podman tag "${loaded_image}" "${candidate_image}"
 
   log "Building qcow2 image"
