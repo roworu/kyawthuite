@@ -165,6 +165,7 @@ wait_for_ssh() {
     -o UserKnownHostsFile=/dev/null
     -p 2222
   )
+  local ssh_debug="${workdir}/ssh-debug.log"
 
   local attempt
   for attempt in $(seq 1 120); do
@@ -174,10 +175,18 @@ wait_for_ssh() {
     fi
     if (( attempt % 12 == 0 )); then
       log "SSH not ready yet, attempt ${attempt}/120"
+      if command -v ss >/dev/null 2>&1; then
+        log "Host port check for 127.0.0.1:2222"
+        ss -ltnp | grep ':2222' || true
+      elif command -v netstat >/dev/null 2>&1; then
+        log "Host port check for 127.0.0.1:2222"
+        netstat -ltnp | grep ':2222' || true
+      fi
     fi
     sleep 5
   done
 
+  log "SSH final diagnostics"
   log "VM serial log:"
   cat "${serial_log}" >&2 || true
   log "Checking if VM is still running"
@@ -186,6 +195,14 @@ wait_for_ssh() {
   else
     log "VM process not running or pid unknown"
   fi
+  if command -v nc >/dev/null 2>&1; then
+    log "Checking TCP connectivity to 127.0.0.1:2222"
+    nc -vz 127.0.0.1 2222 >/dev/null 2>&1 && log "Host TCP port 2222 is reachable" || log "Host TCP port 2222 is not reachable"
+  fi
+  log "Collecting verbose SSH output"
+  ssh -vvv "${ssh_opts[@]}" integration@127.0.0.1 true >"${ssh_debug}" 2>&1 || true
+  log "SSH debug output:"
+  sed -n '1,120p' "${ssh_debug}" >&2 || true
 
   die "SSH did not become ready"
 }
