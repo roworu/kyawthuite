@@ -14,7 +14,6 @@ config_toml=''
 ssh_key=''
 ssh_pub=''
 qcow2_image=''
-source_image_ref=''
 
 ###
 ### utility functions
@@ -88,21 +87,16 @@ build_image() {
 
   [[ -z "${loaded_image}" ]] && die "Failed to load image archive"
 
-  local candidate_image="test-target:latest"
-  local candidate_archive="${workdir}/test-target.ociarchive"
+  local candidate_image="localhost/test-target:latest"
+
+  log "Inspecting podman environment"
+  debug_cmd podman info
+  debug_cmd ls -ld /var/lib/containers/storage /run/containers/storage
 
   debug_cmd podman tag "${loaded_image}" "${candidate_image}"
   debug_cmd podman images --all --digests --no-trunc
   debug_cmd podman image inspect "${loaded_image}"
   debug_cmd podman image inspect "${candidate_image}"
-
-  log "Exporting test image to OCI archive"
-  debug_cmd podman save --format oci-archive -o "${candidate_archive}" "${candidate_image}"
-  debug_cmd ls -lh "${candidate_archive}"
-  debug_cmd tar -tf "${candidate_archive}"
-
-  source_image_ref="oci-archive:${candidate_archive}"
-  log "Using source image ref: ${source_image_ref}"
 
   log "Building qcow2 image"
 
@@ -114,14 +108,13 @@ build_image() {
     -v /run/containers/storage:/run/containers/storage \
     -v "${config_toml}:/config.toml:ro" \
     -v "${output_dir}:/output" \
-    -v "${candidate_archive}:${candidate_archive}:ro" \
     quay.io/centos-bootc/bootc-image-builder:latest \
     --progress verbose \
     --type qcow2 \
     --rootfs btrfs \
     --use-librepo=True \
     --config /config.toml \
-    "${source_image_ref}"
+    "${candidate_image}"
 
   qcow2_image="${output_dir}/qcow2/disk.qcow2"
   [[ -f "${qcow2_image}" ]] || die "qcow2 image not produced"
