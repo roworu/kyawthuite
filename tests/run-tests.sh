@@ -96,7 +96,7 @@ build_image() {
     --rootfs btrfs \
     --use-librepo=True \
     --config /config.toml \
-    "containers-storage:${candidate_image}"
+    "${candidate_image}"
 
   qcow2_image="${output_dir}/qcow2/disk.qcow2"
   [[ -f "${qcow2_image}" ]] || die "qcow2 image not produced"
