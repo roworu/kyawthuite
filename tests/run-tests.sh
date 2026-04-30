@@ -63,11 +63,23 @@ prepare_env() {
   ssh-keygen -q -N '' -t ed25519 -f "${ssh_key}"
 
   cat > "${config_toml}" <<EOF
+[[customizations.packages]]
+name = "openssh-server"
+
 [[customizations.user]]
 name = "integration"
 password = "integration"
 key = "$(cat "${ssh_pub}")"
 groups = ["wheel"]
+
+[[customizations.services]]
+enabled = ["sshd"]
+
+[[customizations.files]]
+path = "/etc/ssh/sshd_config.d/99-test.conf"
+data = """
+ListenAddress 0.0.0.0:22
+"""
 EOF
 }
 
