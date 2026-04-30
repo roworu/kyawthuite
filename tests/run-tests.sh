@@ -110,6 +110,8 @@ build_image() {
     --rm \
     --privileged \
     --pull=always \
+    -v /var/lib/containers/storage:/var/lib/containers/storage \
+    -v /run/containers/storage:/run/containers/storage \
     -v "${config_toml}:/config.toml:ro" \
     -v "${output_dir}:/output" \
     -v "${candidate_archive}:${candidate_archive}:ro" \
