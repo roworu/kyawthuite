@@ -15,8 +15,8 @@ on:
       - "**.txt"
       - ".gitignore"
       - ".github/act/*"
-      - ".github/workdlows/tests.yml"
-      - ".github/workdlows/cleanup.yml"
+      - ".github/workflows/tests.yml"
+      - ".github/workflows/cleanup.yml"
 
   workflow_dispatch:
 
