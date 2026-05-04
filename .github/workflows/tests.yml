@@ -60,6 +60,10 @@ jobs:
         run: |
           just clean && just sudo-clean
 
+      - name: Build image
+        run: |
+          just build
+
       - name: Build VM image
         run: |
           just build-qcow2
