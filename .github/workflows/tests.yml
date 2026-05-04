@@ -49,7 +49,7 @@ jobs:
           just_version="1.50.0"
           just_archive="just-${just_version}-x86_64-unknown-linux-musl.tar.gz"
           just_url="https://github.com/casey/just/releases/download/${just_version}/${just_archive}"
-          just_sha256="5dc713f049e174e22de41fd06292a26c9b90f2d37c1be9390d2082fe6928b376"
+          just_sha256="27e011cd6328fadd632e59233d2cf5f18460b8a8c4269acd324c1a8669f34db0"
 
           curl --fail --location --show-error --silent --output "${just_archive}" "${just_url}"
           echo "${just_sha256}  ${just_archive}" | sha256sum --check
