@@ -1,0 +1,17 @@
+[[customizations.filesystem]]
+mountpoint = "/"
+minsize = "20 GiB"
+
+
+# integrational tests set
+[[customizations.files]]
+path = "/etc/ssh/sshd_config.d/99-test.conf"
+data = """
+ListenAddress 0.0.0.0:22
+"""
+
+[[customizations.user]]
+name = "test_user"
+password = "test"
+key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKeSG5gIy8/M1tjJ0b1kXlNiLrD/Me+qGUdlnouRvOO3"
+groups = ["wheel"]

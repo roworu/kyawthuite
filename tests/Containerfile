@@ -1,15 +1,15 @@
-FROM registry.fedoraproject.org/fedora:43
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm
 
-RUN dnf5 -y install \
-      openssh-clients \
-      podman \
-      procps-ng \
-      qemu-img \
-      qemu-system-x86-core \
-      edk2-ovmf \
-    && dnf5 clean all
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends openssh-client \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY run-tests.sh /usr/local/bin/run-tests.sh
-RUN chmod 0755 /usr/local/bin/run-tests.sh
+WORKDIR /opt/tests
 
-ENTRYPOINT ["/usr/local/bin/run-tests.sh"]
+COPY tests/src/pyproject.toml ./
+RUN uv sync --no-cache
+
+COPY tests/src/ ./
+
+ENTRYPOINT ["uv", "run", "pytest"]
+CMD ["--junitxml=/tmp/test-results/junit.xml"]

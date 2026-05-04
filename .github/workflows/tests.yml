@@ -1,0 +1,123 @@
+---
+name: Run tests on final OS image
+on:
+  workflow_run:
+    workflows:
+      - Build container image
+    branches:
+      - main
+    types:
+      - completed
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: "${{ github.event.repository.name }}"
+  FEDORA_VERSION: "43"
+  DEFAULT_TAG: "latest"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.id || github.run_id }}
+
+jobs:
+  run_tests:
+    name: Run tests on final OS image
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    runs-on: ubuntu-24.04
+
+    timeout-minutes: 30
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Decode Secure Boot keys
+        run: |
+          echo "$SECUREBOOT_KEY" > system_files/base/secureboot/MOK.key
+          chmod 600 system_files/base/secureboot/MOK.key
+        env:
+          SECUREBOOT_KEY: ${{ secrets.SECUREBOOT_KEY }}
+
+      - name: Prepare dependencies
+        run: |
+          sudo apt update && sudo apt install just podman
+
+      - name: Cleanup
+        run: |
+          just clean && just sudo-clean
+
+      - name: Build VM image
+        env:
+          ENABLE_TEST_SSHD: "TRUE"
+        run: |
+          nohup just run-vm-qcow2 > vm.log 2>&1 &
+
+      - name: Build test runner
+        run: |
+          sudo podman build -f tests/Containerfile -t kinoite-test-runner .
+
+      - name: Run pytest integration tests
+        env:
+          TEST_SSH_WAIT_SECONDS: "900"
+        run: |
+          mkdir -p test-results
+          sudo podman run --rm --network host \
+            -e TEST_SSH_WAIT_SECONDS="${TEST_SSH_WAIT_SECONDS}" \
+            -v "${PWD}/tests/ssh:/ssh:ro" \
+            -v "${PWD}/test-results:/tmp/test-results" \
+            kinoite-test-runner
+
+      - name: Parse test report
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import os
+          import sys
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          report = Path("test-results/junit.xml")
+          summary = Path(os.environ["GITHUB_STEP_SUMMARY"])
+
+          if not report.exists():
+              summary.write_text("## Pytest report\n\nJUnit report was not produced.\n", encoding="utf-8")
+              sys.exit(1)
+
+          root = ET.parse(report).getroot()
+          suites = [root] if root.tag == "testsuite" else list(root.iter("testsuite"))
+
+          def total(attribute):
+              return sum(int(suite.attrib.get(attribute, 0)) for suite in suites)
+
+          tests = total("tests")
+          failures = total("failures")
+          errors = total("errors")
+          skipped = total("skipped")
+          passed = tests - failures - errors - skipped
+
+          lines = [
+              "## Pytest report",
+              "",
+              f"- Passed: {passed}",
+              f"- Failed: {failures}",
+              f"- Errors: {errors}",
+              f"- Skipped: {skipped}",
+              f"- Total: {tests}",
+              "",
+          ]
+
+          for case in root.iter("testcase"):
+              problem = case.find("failure")
+              if problem is None:
+                  problem = case.find("error")
+              if problem is None:
+                  continue
+              name = f"{case.attrib.get('classname', '')}.{case.attrib.get('name', '')}".strip(".")
+              message = problem.attrib.get("message", "").splitlines()[0]
+              lines.append(f"- `{name}`: {message}")
+
+          summary.write_text("\n".join(lines), encoding="utf-8")
+          PY

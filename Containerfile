@@ -9,6 +9,8 @@ COPY build_scripts /
 FROM ghcr.io/ublue-os/kinoite-main:${FEDORA_VERSION} AS kinoite
 COPY system_files/base /
 
+ARG ENABLE_TEST_SSHD="FALSE"
+
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/var \
@@ -20,6 +22,10 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/80-finilize.sh
+
+RUN if [ "${ENABLE_TEST_SSHD}" = "TRUE" ]; then \
+      systemctl enable sshd.service; \
+    fi
 
 RUN bootc container lint
 
