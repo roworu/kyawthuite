@@ -43,7 +43,7 @@ jobs:
 
       - name: Prepare dependencies
         run: |
-          sudo apt update && sudo apt install -y podman
+          sudo apt update && sudo apt install -y podman systemd-container
 
           just_version="1.50.0"
           just_archive="just-${just_version}-x86_64-unknown-linux-musl.tar.gz"
