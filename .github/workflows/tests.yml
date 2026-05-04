@@ -134,5 +134,6 @@ jobs:
           PY
 
       - name: Debug
+        if: always()
         run: |
           cat vm.log
