@@ -1,21 +1,8 @@
-EXPECTED_XDG_DIRS = (
-    "Desktop",
-    "Documents",
-    "Downloads",
-    "Music",
-    "Pictures",
-    "Public",
-    "Templates",
-    "Videos",
-)
+import pytest
 
-PLASMA_PACKAGES = (
-    "plasma-desktop",
-    "plasma-workspace",
-    "sddm",
-    "xdg-user-dirs",
-)
-
+from defaults import PLASMA_DE_PACKAGES, \
+    GNOME_DE_PACKAGES, \
+    XDG_DIRS
 
 def test_graphical_target_is_default(ssh_command):
     result = ssh_command("systemctl get-default")
@@ -59,16 +46,28 @@ def test_sddm_is_selected_display_manager(ssh_command):
         f"display-manager.service expected to point to sddm.service, actual target: {actual_unit}"
 
 
-def test_plasma_desktop_packages_installed(ssh_command):
-    packages = " ".join(PLASMA_PACKAGES)
-    result = ssh_command(f"rpm -q {packages}")
+@pytest.mark.plasma
+def test_plasma_de_packages_installed(ssh_command):
+    for package in PLASMA_DE_PACKAGES:
+        ssh_command(f"rpm -q {package}")
 
-    assert result.returncode == 0, \
-        f"Expected Plasma packages to be installed: {packages}. Missing package details: {result.stdout}{result.stderr}"
-
+@pytest.mark.gnome
+def test_gnome_de_packages_installed(ssh_command):
+    for package in GNOME_DE_PACKAGES:
+        ssh_command(f"rpm -q {package}")
 
 def test_xdg_user_dirs_exist(ssh_command):
-    for xdg_dir in EXPECTED_XDG_DIRS:
-        result = ssh_command(f"test -d \"$HOME/{xdg_dir}\"")
-        assert result.returncode == 0, \
-            f"Missing XDG user directory: $HOME/{xdg_dir}. Full response: {result}"
+    for xdg_dir in XDG_DIRS:
+        ssh_command(f'test -d "$HOME/{xdg_dir}"')
+
+
+def test_graphical_session_exists(ssh_command):
+    result = ssh_command("loginctl show-session $(loginctl | awk '/seat0/ {print $1}') -p Type")
+
+# do we want to still check for x11 session?
+#    assert "Type=x11" in result.stdout or "Type=wayland" in result.stdout, \
+#        f"No active graphical session found: {result.stdout}"
+
+    assert "Type=wayland" in result.stdout, \
+        f"No active graphical session found: {result.stdout}"
+

@@ -1,8 +1,17 @@
 
-def test_cachy_kernel(ssh_command):
-    result = ssh_command("uname --kernel-release")
-    assert result.returncode == 0, \
-        f"Command returned bad returncode: {result.returncode}. Full response: {result}"
+from defaults import KERNEL_VERSION
 
-    assert ("cachy" in result.stdout.strip()), \
-        f"Cachy kernel not used. Full response {result.stdout}"
+def test_kernel(ssh_command):
+    
+    result = ssh_command("uname --kernel-release")
+    cmdline = result.stdout.strip()
+    assert KERNEL_VERSION in cmdline, \
+        f"{KERNEL_VERSION} kernel not used. Full response {result.stdout}"
+
+    result = ssh_command("cat /proc/cmdline")
+    cmdline = result.stdout.strip()
+    assert KERNEL_VERSION in cmdline, f"Kernel not mentioned in boot cmdline: {cmdline}"
+
+    
+
+

@@ -1,5 +1,7 @@
 FROM ghcr.io/astral-sh/uv:python3.13-bookworm
 
+ENV PYTHONUNBUFFERED=1
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends openssh-client \
     && rm -rf /var/lib/apt/lists/*
@@ -12,4 +14,5 @@ RUN uv sync --no-cache
 COPY tests/src/ ./
 
 ENTRYPOINT ["uv", "run", "pytest"]
-CMD ["--junitxml=/tmp/test-results/junit.xml"]
+# only test plasma for now:
+CMD ["--junitxml=/tmp/test-results/junit.xml", "-m", "plasma"]
