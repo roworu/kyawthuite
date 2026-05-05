@@ -5,6 +5,14 @@ on:
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - "**.md"
+      - "**.txt"
+      - "tests/**"
+      - ".gitignore"
+      - ".github/act/**"
+      - ".github/workflows/tests.yml"
+      - ".github/workflows/cleanup.yml"
   schedule:
     - cron: '05 10 * * *'
   push:
@@ -13,9 +21,9 @@ on:
     paths-ignore:
       - "**.md"
       - "**.txt"
-      - "tests/*"
+      - "tests/**"
       - ".gitignore"
-      - ".github/act/*"
+      - ".github/act/**"
       - ".github/workflows/tests.yml"
       - ".github/workflows/cleanup.yml"
 
