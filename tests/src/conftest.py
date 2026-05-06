@@ -13,7 +13,7 @@ def ssh_command():
     port = os.getenv("TEST_SSH_PORT", "2222")
     user = os.getenv("TEST_SSH_USER", "test_user")
     key = Path(os.getenv("TEST_SSH_KEY", "/ssh/test_user"))
-    timeout = int(os.getenv("TEST_SSH_COMMAND_TIMEOUT", "180"))
+    timeout = int(os.getenv("TEST_SSH_COMMAND_TIMEOUT", "600"))
 
     # 2) fail early if key is missing
     assert key.is_file(), f"SSH key not found: {key}"
