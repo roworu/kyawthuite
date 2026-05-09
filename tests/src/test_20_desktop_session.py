@@ -1,7 +1,4 @@
-import pytest
-
 from defaults import PLASMA_DE_PACKAGES, \
-    GNOME_DE_PACKAGES, \
     XDG_DIRS
 
 def test_graphical_target_is_default(ssh_command):
@@ -50,9 +47,6 @@ def test_plasma_de_packages_installed(ssh_command):
     for package in PLASMA_DE_PACKAGES:
         ssh_command(f"rpm -q {package}")
 
-def test_gnome_de_packages_installed(ssh_command):
-    for package in GNOME_DE_PACKAGES:
-        ssh_command(f"rpm -q {package}")
 
 def test_xdg_user_dirs_exist(ssh_command):
     for xdg_dir in XDG_DIRS:

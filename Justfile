@@ -3,7 +3,7 @@
 export image_name := env("IMAGE_NAME", "kinoite")
 export default_tag := env("DEFAULT_TAG", "latest")
 export bib_image := env("BIB_IMAGE", "quay.io/centos-bootc/bootc-image-builder:latest")
-export enable_test_sshd := env("ENABLE_TEST_SSHD", "FALSE")
+export testing_env := env("TESTING_ENVIRONMENT", "FALSE")
 export vm_gpu := env("VM_GPU", "TRUE")
 
 alias build-vm := build-qcow2
@@ -101,7 +101,7 @@ build $target_image=image_name $tag=default_tag:
     podman build \
         "${BUILD_ARGS[@]}" \
         --pull=newer \
-        --build-arg ENABLE_TEST_SSHD=${enable_test_sshd} \
+        --build-arg TESTING_ENVIRONMENT=${testing_env} \
         --target ${target_image} \
         --tag "${target_image}:${tag}" \
         .

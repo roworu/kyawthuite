@@ -1,4 +1,3 @@
-
 from defaults import KERNEL_VERSION
 
 def test_kernel(ssh_command):

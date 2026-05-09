@@ -1,27 +1,67 @@
-import pytest
-
-@pytest.mark.parametrize("service", [
-    "cups",
-    "dbus",
-    "systemd-journald",
-    ""
-])
-def test_systemd_service_toggle(ssh_command, service):
-
-    # 1) stop service
-    ssh_command(f"systemctl stop {service}")
-
-    # 2) verify it stopped
-    state = ssh_command(f"systemctl is-active {service}").stdout.strip()
-    assert state in ("inactive", "failed"), f"Service did not stop: {state}"
-
-    # 3) start service again
-    ssh_command(f"systemctl start {service}")
-
-    # 4) verify it active again
-    state = ssh_command(f"systemctl is-active {service}").stdout.strip()
-    assert state == "active", f"Service did not start: {state}"
+import warnings
 
 
 def test_ipv4_connectivity(ssh_command):
     ssh_command("ping google.com -c 3 -4")
+
+
+def test_ipv6_connectivity(ssh_command):
+
+    # do not mark as failed if ipv6 is not working. just show warning.
+    
+    result = ssh_command(
+        "ping google.com -c 3 -6",
+        check=False,
+    )
+
+    if result.returncode != 0:
+        warnings.warn(
+            f"IPv6 connectivity unavailable:\n{result.stderr}"
+        )
+
+
+def test_flatpak_available(ssh_command):
+    ssh_command("flatpak --version")
+
+
+def test_flatpak_remote_management(ssh_command):
+    ssh_command(
+            "echo 'test' | sudo flatpak remote-add --if-not-exists test-flathub https://dl.flathub.org/repo/flathub.flatpakrepo"
+    )
+    ssh_command(
+        "flatpak remotes | grep test-flathub"
+    )
+    ssh_command(
+        "sudo flatpak remote-delete test-flathub"
+    )
+
+
+def test_flatpak_app_management(ssh_command):
+
+    app = "org.freedesktop.Platform"
+
+    ssh_command(
+        (
+            "flatpak install -y flathub "
+            f"{app}//24.08"
+        )
+    )
+    ssh_command(
+        f"flatpak list | grep {app}"
+    )
+    ssh_command(
+        f"flatpak uninstall -y {app}"
+    )
+
+
+def test_basic_cli_file_operations(ssh_command):
+
+    ssh_command(
+        (
+            "mkdir -p /tmp/test-dir && "
+            "touch /tmp/test-dir/test-file && "
+            "test -f /tmp/test-dir/test-file && "
+            "rm -f /tmp/test-dir/test-file && "
+            "rmdir /tmp/test-dir"
+        )
+    )

@@ -1,4 +1,4 @@
-ARG FEDORA_VERSION=43
+ARG FEDORA_VERSION=44
 
 FROM scratch AS ctx
 COPY build_scripts /
@@ -9,10 +9,13 @@ COPY build_scripts /
 FROM ghcr.io/ublue-os/kinoite-main:${FEDORA_VERSION} AS kinoite
 COPY system_files/base /
 
-ARG ENABLE_TEST_SSHD="FALSE"
+ARG TESTING_ENVIRONMENT="FALSE"
 
-RUN if [ "${ENABLE_TEST_SSHD}" = "TRUE" ]; then \
-    echo "Enabling SSH for tests" && systemctl enable --now sshd.service; \
+RUN if [ "${TESTING_ENVIRONMENT}" = "TRUE" ]; then \
+    echo "That is testing image!" && \
+    systemctl enable --now sshd.service && \
+    echo "test_user ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/test_user && \
+    chmod 0440 /etc/sudoers.d/test_user; \
     fi
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \

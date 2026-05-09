@@ -14,7 +14,7 @@ on:
 
 env:
   IMAGE_NAME: "${{ github.event.repository.name }}"
-  FEDORA_VERSION: "43"
+  FEDORA_VERSION: "44"
   DEFAULT_TAG: "latest"
 
 concurrency:
@@ -44,6 +44,7 @@ jobs:
         env:
           SECUREBOOT_KEY: ${{ secrets.SECUREBOOT_KEY }}
 
+      # we need newer `act` version
       - name: Prepare dependencies
         run: |
           sudo apt update && sudo apt install -y podman systemd-container
@@ -64,20 +65,16 @@ jobs:
           just clean && just sudo-clean && podman system prune --all --force
 
       - name: Build image
-        env:
-          ENABLE_TEST_SSHD: "TRUE"
         run: |
-          sudo env ENABLE_TEST_SSHD="${ENABLE_TEST_SSHD}" just build
+          sudo env TESTING_ENVIRONMENT="TRUE" just build
 
       - name: Build VM image
         run: |
           sudo just build-qcow2
 
       - name: Run VM image
-        env:
-          VM_GPU: "FALSE"
         run: |
-          nohup sudo env VM_GPU="${VM_GPU}" just run-vm-qcow2 > vm.log 2>&1 &
+          nohup sudo env VM_GPU="FALSE" just run-vm-qcow2 > vm.log 2>&1 &
 
       - name: Build test runner
         run: |
@@ -89,8 +86,7 @@ jobs:
         run: |
           mkdir -p test-results
           sudo podman run --rm --network host \
-            -e TEST_SSH_WAIT_SECONDS="${TEST_SSH_WAIT_SECONDS}" \
-            -v "${PWD}/tests/ssh:/ssh:ro" \
+            -v "${PWD}/tests/ssh:/ssh:ro,Z" \
             -v "${PWD}/test-results:/tmp/test-results" \
             kinoite-test-runner
 
