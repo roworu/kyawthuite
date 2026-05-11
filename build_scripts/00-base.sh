@@ -51,8 +51,7 @@ dnf5 versionlock add "${kernel_packages[@]}"
 
 
 dnf5 -y copr enable bieszczaders/kernel-cachyos-addons "fedora-${FEDORA_VERSION}-x86_64"
-dnf5 config-manager setopt kernel-cachyos-addons.enabled=0
-dnf5 -y install --enablerepo=kernel-cachyos-addons ananicy-cpp
+dnf5 -y install ananicy-cpp
 systemctl enable ananicy-cpp.service
 
 ###
