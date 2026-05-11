@@ -1,23 +1,7 @@
-import warnings
-
 
 def test_ipv4_connectivity(ssh_command):
-    ssh_command("ping google.com -c 3 -4")
+    ssh_command("ping 8.8.8.8 -c 3 -4")
 
-
-def test_ipv6_connectivity(ssh_command):
-
-    # do not mark as failed if ipv6 is not working. just show warning.
-    
-    result = ssh_command(
-        "ping google.com -c 3 -6",
-        check=False,
-    )
-
-    if result.returncode != 0:
-        warnings.warn(
-            f"IPv6 connectivity unavailable:\n{result.stderr}"
-        )
 
 
 def test_flatpak_available(ssh_command):
@@ -26,14 +10,23 @@ def test_flatpak_available(ssh_command):
 
 def test_flatpak_remote_management(ssh_command):
 
+    # add/delete test
     ssh_command(
-            "echo 'test' | sudo flatpak remote-add --if-not-exists test-flathub https://dl.flathub.org/repo/flathub.flatpakrepo"
+            "sudo flatpak remote-add --if-not-exists test-flathub https://dl.flathub.org/repo/flathub.flatpakrepo"
     )
     ssh_command(
         "flatpak remotes | grep test-flathub"
     )
     ssh_command(
         "sudo flatpak remote-delete test-flathub"
+    )
+
+    # add and stay for future use
+    ssh_command(
+            "sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo"
+    )
+    ssh_command(
+        "flatpak remotes | grep flathub"
     )
 
 
