@@ -44,6 +44,8 @@ packages=(
 	kernel-cachyos-lto-core
 	kernel-cachyos-lto-devel-matched
 	kernel-cachyos-lto-modules
+	scx-scheds
+    scx-manager
 )
 
 dnf5 -y install "${packages[@]}"
