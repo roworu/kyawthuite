@@ -24,7 +24,7 @@ def test_flatpak_remote_management(ssh_command):
 def test_flatpak_app_management(ssh_command):
 
     ssh_command(
-            "sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo"
+            "flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo"
     )
     ssh_command(
         "flatpak remotes | grep flathub"
