@@ -21,16 +21,15 @@ def test_flatpak_remote_management(ssh_command):
         "sudo flatpak remote-delete test-flathub"
     )
 
-    # add and stay for future use
+
+def test_flatpak_app_management(ssh_command):
+
     ssh_command(
             "sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo"
     )
     ssh_command(
         "flatpak remotes | grep flathub"
     )
-
-
-def test_flatpak_app_management(ssh_command):
 
     app = "org.kde.okular"
 
