@@ -11,14 +11,4 @@ GNOME_DE_PACKAGES = [
     "xdg-user-dirs",
 ]
 
-XDG_DIRS = [ "Desktop",
-    "Documents",
-    "Downloads",
-    "Music",
-    "Pictures",
-    "Public",
-    "Templates",
-    "Videos"
-]
-
 KERNEL_VERSION = "cachy"

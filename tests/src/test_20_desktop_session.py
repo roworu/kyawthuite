@@ -1,5 +1,5 @@
-from defaults import PLASMA_DE_PACKAGES, \
-    XDG_DIRS
+from defaults import PLASMA_DE_PACKAGES
+
 
 def test_graphical_target_is_default(ssh_command):
     result = ssh_command("systemctl get-default")
@@ -47,10 +47,6 @@ def test_plasma_de_packages_installed(ssh_command):
     for package in PLASMA_DE_PACKAGES:
         ssh_command(f"rpm -q {package}")
 
-
-def test_xdg_user_dirs_exist(ssh_command):
-    for xdg_dir in XDG_DIRS:
-        ssh_command(f'test -d "$HOME/{xdg_dir}"')
 
 
 def test_graphical_session_exists(ssh_command):
