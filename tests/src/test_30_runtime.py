@@ -25,6 +25,7 @@ def test_flatpak_available(ssh_command):
 
 
 def test_flatpak_remote_management(ssh_command):
+
     ssh_command(
             "echo 'test' | sudo flatpak remote-add --if-not-exists test-flathub https://dl.flathub.org/repo/flathub.flatpakrepo"
     )
@@ -38,13 +39,10 @@ def test_flatpak_remote_management(ssh_command):
 
 def test_flatpak_app_management(ssh_command):
 
-    app = "org.freedesktop.Platform"
+    app = "org.kde.okular"
 
     ssh_command(
-        (
-            "flatpak install -y flathub "
-            f"{app}//24.08"
-        )
+        f"flatpak install --user --assumeyes flathub {app}"
     )
     ssh_command(
         f"flatpak list | grep {app}"
