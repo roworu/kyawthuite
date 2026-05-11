@@ -162,7 +162,6 @@ jobs:
         run: |
           cat <<'EOF' >>build_args.txt
           FEDORA_VERSION=${{ env.FEDORA_VERSION }}
-          FLAVOR=${{ matrix.flavor }}
           EOF
 
       - name: Build Image
