@@ -24,22 +24,21 @@ def test_flatpak_remote_management(ssh_command):
 def test_flatpak_app_management(ssh_command):
 
     ssh_command(
-            "flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo"
+            "flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo"
     )
     ssh_command(
         "flatpak remotes | grep flathub"
     )
 
     app = "org.kde.okular"
-
     ssh_command(
-        f"flatpak install --user --assumeyes flathub {app}"
+        f"flatpak install --noninteractive --assumeyes flathub {app}"
     )
     ssh_command(
         f"flatpak list | grep {app}"
     )
     ssh_command(
-        f"flatpak uninstall -y {app}"
+        f"flatpak uninstall --noninteractive --assumeyes {app}"
     )
 
 
