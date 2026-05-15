@@ -4,19 +4,6 @@ set -ouex pipefail
 shopt -s nullglob
 
 ###
-### base packages
-###
-
-base_packages=(
-	cmake
-	ccache
-	gcc
-	gcc-c++
-	openblas
-)
-dnf5 -y install "${base_packages[@]}"
-
-###
 ###  kernel install
 ###
 
